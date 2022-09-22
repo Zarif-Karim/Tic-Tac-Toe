@@ -4,6 +4,13 @@ const whopx = document.getElementById("who-px");
 const whopo = document.getElementById("who-po");
 const turnpx = document.getElementById("turn-px");
 const turnpo = document.getElementById("turn-po");
+const timepx = document.getElementById("time-px");
+const timepo = document.getElementById("time-po");
+
+//remaining time in seconds, gets updated from server eventually
+//currently doing it client side through functions
+let TIME_PX = 15;
+let TIME_PO = 15;
 
 startNewBoard();
 
@@ -48,4 +55,32 @@ function updatePlayerPanelDisplay(player) {
     
     turnpx.style.display = player === 1 ? 'block' : 'none';
     turnpo.style.display = player === 1 ? 'none' : 'block';
+
+    updateTimerDisplay();
 }
+
+function updateTimerDisplay(){
+    timepx.innerHTML = TIME_PX;
+    timepo.innerHTML = TIME_PO;
+}
+
+
+//seconds timer
+let INTERVAL_ID = null;
+
+function startTimer(){
+    INTERVAL_ID = setInterval(() => {
+        player === 1 ? --TIME_PX : --TIME_PO;
+        updateTimerDisplay();
+        if(TIME_PO === 0 || TIME_PX === 0) 
+            stopTimer();
+        
+        console.log('tick');
+    }, 1000);
+}
+
+function stopTimer(){
+    clearInterval(INTERVAL_ID);
+    INTERVAL_ID = null;
+}
+

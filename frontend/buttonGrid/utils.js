@@ -9,9 +9,10 @@ async function startNewBoard() {
     .then(data=>{
         console.log(data);
         clearBoard();
+        player = 1;
+        updatePlayerPanelDisplay(player);
+        startTimer();
     });
-    player = 1;
-    updatePlayerPanelDisplay(player)
 }
     
 //getting all the button elemets of the board
@@ -46,11 +47,11 @@ function clearBoard()
 
 
 //adding click events to all the board buttons to send update request to server
-function setScreenBoardClickEvents(displayBoard){
+function setScreenBoardClickEvents(displayBoard, remove = false){
     for(let i in displayBoard){
         for(let j in displayBoard[i]){
             displayBoard[i][j].onclick = 
-                ()=> updateBoard(i,j,displayBoard);
+            remove ? null : ()=> updateBoard(i,j,displayBoard);
         }
     }
 }
