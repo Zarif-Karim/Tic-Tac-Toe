@@ -9,31 +9,46 @@ function getBoard(){
         b.push(btnRow);
     }
     return b;  
-};
+};  
 
-function updateBoard(i,j,displayBoard,dataBoard){
-    const update = dataBoard.update(i,j,player);
-    const data = JSON.parse(dataBoard.serialize(update,player));
+async function getData(i,j,p){
+    const resp = await fetch(`http://localhost:5000?r=${i}&c=${j}&p=${player}`);
+    return await resp.json();
+}
+
+async function updateBoard(i,j,displayBoard){
+    let data = await getData(i,j,player);
     console.log(data);
     if(data.update === "success"){
-        displayBoard[i][j].children[0]
-        .innerText = data.board[i][j] === 1 ? 'X' : 'O';
-        player += 1;
+        for(let i in data.board){
+            for(let j in data.board[i]){
+                displayBoard[i][j].children[0].
+                innerText = data.board[i] == 1 ? 'X' : 'O';
+                player += 1;
+            }
+        }
     }
     if(player > 2) player = 1;
 }
 
-function setScreenBoardClickEvents(displayBoard, dataBoard){
+function setScreenBoardClickEvents(displayBoard){
     for(let i in displayBoard){
         for(let j in displayBoard[i]){
             displayBoard[i][j].onclick = 
-                ()=> updateBoard(i,j,displayBoard, dataBoard);
+                ()=> updateBoard(i,j,displayBoard);
         }
     }
 }
 
 const displayBoard = getBoard();
 let player = 1;
-const dataBoard = new Board();
-setScreenBoardClickEvents(displayBoard,dataBoard);
+setScreenBoardClickEvents(displayBoard);
+
+//start new board
+async function startNewBoard() {
+    fetch(`http://localhost:5000?game=new`)
+    .then(resp=>resp.text())
+    .then(data=>console.log(data));
+}
+
 
