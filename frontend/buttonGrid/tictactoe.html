@@ -10,23 +10,45 @@
 </head>
 
 <body>
-    <div id="board-container">
-        <div class="row">
-            <div class="col"><button class="cell top-left"><span class="title"></span></button></div>
-            <div class="col"><button class="cell top-middle"><span class="title"></span></button></div>
-            <div class="col"><button class="cell top-right"><span class="title"></span></button></div>
+    <h1>Tic Tac Toe</h1>
+    <div class="main-container">
+
+        <div class="player-panel player-x">
+            <span class="player-panel-title">Player X</span>
+            <h3 class="who" id="who-px">Who</h3>
+            <span>Time Remaining:</span>
+            <h4 class="remaining-time" id="time-px">120 s</h4>
+            <div class="green-indicator" id="turn-px"></div>
         </div>
-        <div class="row">
-            <div class="col"><button class="cell middle-left"><span class="title"></span></button></div>
-            <div class="col"><button class="cell middle-middle"><span class="title"></span></button></div>
-            <div class="col"><button class="cell middle-right"><span class="title"></span></button></div>
+        <div id="board-container">
+            <div class="row">
+                <div class="col"><button class="cell top-left"><span class="grid-value"></span></button></div>
+                <div class="col"><button class="cell top-middle"><span class="grid-value"></span></button></div>
+                <div class="col"><button class="cell top-right"><span class="grid-value"></span></button></div>
+            </div>
+            <div class="row">
+                <div class="col"><button class="cell middle-left"><span class="grid-value"></span></button></div>
+                <div class="col"><button class="cell middle-middle"><span class="grid-value"></span></button></div>
+                <div class="col"><button class="cell middle-right"><span class="grid-value"></span></button></div>
+            </div>
+            <div class="row">
+                <div class="col"><button class="cell bottom-left"><span class="grid-value"></span></button></div>
+                <div class="col"><button class="cell bottom-middle"><span class="grid-value"></span></button></div>
+                <div class="col"><button class="cell bottom-right"><span class="grid-value"></span></button></div>
+            </div>
         </div>
-        <div class="row">
-            <div class="col"><button class="cell bottom-left"><span class="title"></span></button></div>
-            <div class="col"><button class="cell bottom-middle"><span class="title"></span></button></div>
-            <div class="col"><button class="cell bottom-right"><span class="title"></span></button></div>
+        <div class="player-panel player-o">
+            <span class="player-panel-title">Player O</span>
+            <h3 class="who" id="who-po">Who</h3>
+            <span>Time Remaining:</span>
+            <h4 class="remaining-time" id="time-po">120 s</h4>
+            <div class="green-indicator" id="turn-po"></div>
         </div>
     </div>
+    <div class="util-button-row">
+        <button id="start-new">Restart</button>
+    </div>
+    <script src="utils.js"></script>
     <script src="tictactoe.js"></script>
 </body>
 
