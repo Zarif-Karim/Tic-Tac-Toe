@@ -22,9 +22,11 @@ async function updateBoard(i,j,displayBoard){
     if(data.update === "success"){
         for(let i in data.board){
             for(let j in data.board[i]){
-                displayBoard[i][j].children[0].
-                innerText = data.board[i] == 1 ? 'X' : 'O';
-                player += 1;
+                if(data.board[i][j] !== 0) {
+                    displayBoard[i][j].children[0].
+                    innerText = data.board[i][j] == 1 ? 'X' : 'O';
+                    player += 1;
+                }
             }
         }
     }

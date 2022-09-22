@@ -26,7 +26,7 @@ if (['GET', 'POST'].indexOf(req.method) > -1) {
 
     if(req.url == "/?game=new"){
         board = new Board();
-        res.end('New board created');
+        res.end('New board created!');
         return;
     }
 
