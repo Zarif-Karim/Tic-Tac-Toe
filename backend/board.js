@@ -30,28 +30,53 @@ class Board
 
     #checkRow(player,i)
     {
-        return this.board[i][0] === player
-            && this.board[i][1] === player
-            && this.board[i][2] === player;
+        const win = this.board[i][0] === player
+                && this.board[i][1] === player
+                && this.board[i][2] === player;
+        if(!win) return false;
+
+        this.winPath = [[i,0],[i,1],[i,2]];
+        return true;
     }
     #checkCol(player,i)
     {
-        return this.board[0][i] === player
-            && this.board[1][i] === player
-            && this.board[2][i] === player;
+        const win =  this.board[0][i] === player
+                && this.board[1][i] === player
+                && this.board[2][i] === player;
+        
+        if(!win) return false;
+
+        this.winPath = [[0,i],[1,i],[2,i]];
+        return true;
     }
+
+    #checkDiagonals(player)
+    {
+        //middle must be player filled
+        if(this.board[1][1] !== player) return false;
+
+        if(this.board[0][0] == player && this.board[2][2] == player )
+        {
+            this.winPath = [[0,0],[1,1],[2,2]];
+            return true;
+        }
+
+        if(this.board[0][2] == player && this.board[2][0] == player )
+        {
+            this.winPath = [[0,2],[1,1],[2,0]];
+            return true;
+        }
+
+        return false;
+    }
+
+    //returns true if player p won and sets this.winPath accordingly
     #checkWin(p)
     {       
         if (p && ( 
             this.#checkRow(p,0) || this.#checkRow(p,1) || this.#checkRow(p,2) ||
             this.#checkCol(p,0) || this.#checkCol(p,1) || this.#checkCol(p,2) ||
-            ( 
-                this.board[1][1] == p && 
-                (
-                    (this.board[0][0] == p && this.board[2][2] == p) ||
-                    (this.board[0][2] == p && this.board[2][0] == p)
-                )
-            )
+            this.#checkDiagonals(p)
         )) return true;
         return false;
     }
@@ -62,14 +87,16 @@ class Board
 
         if(updateStatus != null)
             data.update = updateStatus? "success" : "fail";
+            
+        if(this.moves >= 9)
+            data.winner = 'draw';
 
         if(this.#checkWin(player))
             data.winner = player == 1 ? 'X' : 'O';
 
-        if(this.moves >= 9)
-            data.winner = 'draw';
-
         data.game_status = ('winner' in data) ? 'finished' : 'ongoing';
+
+        if(this.winPath) data.winPath = this.winPath;
 
         data.board = this.board;
 

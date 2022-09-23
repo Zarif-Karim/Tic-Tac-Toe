@@ -1,15 +1,25 @@
 let player = 1; //have to change this eventually
 
+document.getElementById("start-new").onclick = startNewBoard;
+
 //start new board
-document.getElementById("start-new").onclick = async function startNewBoard() {
-    fetch(`http://localhost:5000?game=new`)
+async function startNewBoard() {
+    await fetch(`http://localhost:5000?game=new`)
     .then(resp=>resp.text())
     .then(data=>{
         console.log(data);
         clearBoard();
+        setColorOfBoard('black','white');
+        player = 1;
+        TIME_PO = 15;
+        TIME_PX = 15;
+        updatePlayerPanelDisplay(player);
+        setScreenBoardClickEvents(displayBoard);
+        stopTimer();
+        startTimer();
     });
-};
-
+}
+    
 //getting all the button elemets of the board
 function getBoard(){
     const rows = document.getElementById("board-container").children;
@@ -40,32 +50,13 @@ function clearBoard()
     }
 }
 
-async function updateBoard(i,j,displayBoard){
-    //make the move
-    let data = await getData(i,j,player);
-    console.log(data); //debug
-
-    //update board if move successful
-    if(data.update === "success"){
-        player += 1; //have to change this eventually
-        for(let i in data.board){
-            for(let j in data.board[i]){
-                if(data.board[i][j] !== 0) {
-                    displayBoard[i][j].children[0].
-                    innerText = data.board[i][j] == 1 ? 'X' : 'O';
-                }
-            }
-        }
-    }
-    if(player > 2) player = 1; //have to change this eventually
-}
 
 //adding click events to all the board buttons to send update request to server
-function setScreenBoardClickEvents(displayBoard){
+function setScreenBoardClickEvents(displayBoard, remove = false){
     for(let i in displayBoard){
         for(let j in displayBoard[i]){
             displayBoard[i][j].onclick = 
-                ()=> updateBoard(i,j,displayBoard);
+            remove ? null : ()=> updateBoard(i,j,displayBoard);
         }
     }
 }
