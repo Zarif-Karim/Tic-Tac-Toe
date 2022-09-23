@@ -4,7 +4,7 @@ document.getElementById("start-new").onclick = startNewBoard;
 
 //start new board
 async function startNewBoard() {
-    await fetch(`http://localhost:5000?game=new`)
+    await fetch(`http://localhost:5000/newgame`)
     .then(resp=>resp.text())
     .then(data=>{
         console.log(data);
@@ -17,7 +17,8 @@ async function startNewBoard() {
         setScreenBoardClickEvents(displayBoard);
         stopTimer();
         startTimer();
-    });
+    })
+    .catch(err=>console.log(err));
 }
     
 //getting all the button elemets of the board

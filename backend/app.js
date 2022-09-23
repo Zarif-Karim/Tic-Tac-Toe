@@ -1,44 +1,28 @@
-const http = require('http');
-const Board = require('./board');
-const parseParams = require('./utils');
-
-let board = new Board();
-
+const cors = require('cors');
+const app = require('express')();
 const port = 5000;
 
-http.createServer((req, res) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*', /* @dev First, read about security */
-    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
-    'Access-Control-Max-Age': 2592000, // 30 days
-    /** add other headers as per requirement */
-  };
+const Board = require('./board');
+let board = new Board();
 
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, headers);
-    res.end();
-    return;
-}
+app.use(cors());
 
-if (['GET', 'POST'].indexOf(req.method) > -1) {
-    console.log(req.url);
-    res.writeHead(200, headers);
+app.get('/',(req,res)=>{
+    console.log(req.url, req.query);
+    const {r,c,p} = req.query;
+    const updateStatus = board.update(r,c,p);
+    res.send(board.serialize(updateStatus,p));
+});
 
-    if(req.url == "/?game=new"){
-        board = new Board();
-        res.end('New board created!');
-        return;
-    }
+app.get('/newgame',(req,res)=>{
+    console.log('newgame', req.url);
+    board = new Board();
+    res.send('New board created!');
+});
 
-    const params = parseParams(req.url);
-    if(params) {
-        const {r,c,p} = params;
-        const updateStatus = board.update(r,c,p);
-        res.end(board.serialize(updateStatus,p));
-        return;
-    }
-  }
+app.all('*',(req,res)=>{
+    console.log('all', req.url, req.query);
+    res.send(`404: NOT FOUND`);
+});
 
-  res.writeHead(405, headers);
-  res.end(`${req.method} is not allowed for the request.`);
-}).listen(port);
+app.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));
