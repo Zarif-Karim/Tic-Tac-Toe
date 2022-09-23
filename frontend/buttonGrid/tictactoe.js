@@ -1,3 +1,10 @@
+//to-do
+/*
+    refactor to OO style
+    refactor to get data from server and update:
+        player id
+        timer updated in server based on timestamp
+*/
 //globals
 const displayBoard = getBoard();
 const whopx = document.getElementById("who-px");
@@ -17,16 +24,6 @@ startNewBoard();
 //event listeners
 setScreenBoardClickEvents(displayBoard);
 
-//to-do
-/*
-    show win message
-    done --> disable button listeners on game finish
-    update reset button to implement required actions to reset game.
-    done --> update player who message
-    done --> show/hide the green turn signal based on player
-    done --> timer function
-    loses if timer finishes
-*/
 async function updateBoard(i,j,displayBoard){
     //make the move
     let data = await getData(i,j,player);
