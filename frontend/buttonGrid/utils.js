@@ -9,8 +9,13 @@ async function startNewBoard() {
     .then(data=>{
         console.log(data);
         clearBoard();
+        setColorOfBoard('black','white');
         player = 1;
+        TIME_PO = 15;
+        TIME_PX = 15;
         updatePlayerPanelDisplay(player);
+        setScreenBoardClickEvents(displayBoard);
+        stopTimer();
         startTimer();
     });
 }
