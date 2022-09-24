@@ -14,9 +14,9 @@ app.use(express.static('../frontend/buttonGrid'))
 
 app.get('/',(req,res)=>{
     console.log(req.url, req.query);
-    const {r,c,p} = req.query;
-    const updateStatus = board.update(r,c,p);
-    res.send(board.serialize(updateStatus,p));
+    //const {r,c,p} = req.query;
+    //const updateStatus = board.update(r,c,p);
+    res.send('Home Page');
 });
 
 app.get('/newgame',(req,res)=>{
@@ -36,7 +36,11 @@ io.on('connection',(socket)=>{
         console.log(`Disconnected: ${socket.id}`)
     });
 
-    socket.emit('message','this is a test');
+    socket.on('move', (r,c,p)=>{
+        console.log(r,c,p);
+        const updateStatus = board.update(r,c,p);
+        socket.emit('status',board.serialize(updateStatus,p));
+    });
 });
 
 server.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));
