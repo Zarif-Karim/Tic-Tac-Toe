@@ -7,7 +7,7 @@
 */
 //globals
 let socket = null; 
-if(io) socket = io('http://localhost:5000');
+if(io) socket = io(); //'http://localhost:5000' //automatically connects to the server serving the file
 const displayBoard = getBoard();
 const whopx = document.getElementById("who-px");
 const whopo = document.getElementById("who-po");
@@ -19,27 +19,12 @@ const timepo = document.getElementById("time-po");
 let INTERVAL_ID = null;
 //remaining time in seconds, gets updated from server eventually
 //currently doing it client side through functions
-const default_time = 300;
 
-let TIME_PX = default_time;
-let TIME_PO = default_time;
-
-let player = 1; //have to change this eventually
-
-function updateBoard(board){
-    player += 1; //have to change this eventually
-    if(player > 2) player = 1; //have to change this eventually
-    updatePlayerPanelDisplay(player); //have to change this eventually
-
-    for(let i in board){
-        for(let j in board[i]){
-            if(board[i][j] !== 0) {
-                displayBoard[i][j].children[0].
-                innerText = board[i][j] == 1 ? 'X' : 'O';
-            }
-        }
-    }
-}
+let player = 3; //have to change this eventually
+let default_time = 0;
+let TIME_PX = 0;
+let TIME_PO = 0;
+let turnOf = 1;
 
 if(!socket) {
     finishGame({});
@@ -47,15 +32,22 @@ if(!socket) {
 }
 else 
 {
-    //asking for new board
-    socket.emit('newgame');
+    socket.on('initialData',data=>{
+        player = data.role;
+        default_time = data.remaining_time;
+
+        //change this V (spectators are initiation new games);
+        //asking for new board
+        socket.emit('newgame');
+        document.getElementById("start-new").hidden = true;
+    });
 
     socket.on('status', (data)=>{
         console.log(data);
 
         //update board if move successful
         if(data.update === "success"){
-            updateBoard(data.board);
+            updateBoard(data.board,data.turnOf);
         }
 
         if(data.game_status === "finished")
@@ -65,13 +57,14 @@ else
     });
 
     socket.on('newboard', (data)=>{
-        console.log(`New board: ${data}`);
-        if(data === 'success')
-            startNewBoard();
-    })
+        console.log('New board:', data);
+        startNewBoard(data.turnOf);
+        // if(data.status === 'success') {
+        // } else { //this is a spectator
+            
+        // }
+    });
 
-    socket.on('showMsg',(msg)=>console.log('showMsg',msg));
-    
-    //event listeners
-    setScreenBoardClickEvents(displayBoard);
+    //debug
+    // socket.on('showMsg',(msg)=>console.log('showMsg',msg));
 }

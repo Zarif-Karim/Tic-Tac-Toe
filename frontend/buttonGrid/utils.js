@@ -3,14 +3,15 @@ document.getElementById("start-new").onclick = ()=>{
 };
 
 //start new board
-async function startNewBoard() {
+async function startNewBoard(_turnOf) {
+    document.getElementById("start-new").hidden = true;
     clearBoard();
     setColorOfBoard('black','white');
-    player = 1;
-    TIME_PO = default_time;
     TIME_PX = default_time;
-    updatePlayerPanelDisplay(player);
-    setScreenBoardClickEvents(displayBoard);
+    TIME_PO = default_time;
+    turnOf = _turnOf;
+    updatePlayerPanelDisplay();
+    setScreenBoardClickEvents(displayBoard/*,player*/);
     stopTimer();
     startTimer();
 }
@@ -29,10 +30,18 @@ function getBoard(){
     return b;  
 };  
 
-//sends the move to the server and gets success message and data
-async function getData(i,j,p){
-    const resp = await fetch(`http://localhost:5000?r=${i}&c=${j}&p=${player}`);
-    return await resp.json();
+function updateBoard(board,_turnOf){
+    turnOf = _turnOf;
+    updatePlayerPanelDisplay(); //have to change this eventually
+
+    for(let i in board){
+        for(let j in board[i]){
+            if(board[i][j] !== 0) {
+                displayBoard[i][j].children[0].
+                innerText = board[i][j] == 1 ? 'X' : 'O';
+            }
+        }
+    }
 }
 
 function clearBoard()
@@ -45,13 +54,17 @@ function clearBoard()
     }
 }
 
-
 //adding click events to all the board buttons to send update request to server
-function setScreenBoardClickEvents(displayBoard, remove = false){
+function setScreenBoardClickEvents(displayBoard/*, player*/, remove = false){
+    console.log('Onclick',player)
     for(let i in displayBoard){
         for(let j in displayBoard[i]){
             displayBoard[i][j].onclick = 
-            remove ? null : ()=> socket.emit('move', i,j,player);
+            remove ? null : 
+            ()=> {
+                if(turnOf === player) 
+                    socket.emit('move', i,j,player);
+            }
         }
     }
 }
@@ -71,6 +84,7 @@ function setColorOfBoard(fontColor,backgroundColor)
 
 function finishGame(winData){
     console.log("Finished", winData);
+    document.getElementById("start-new").hidden = false;
     stopTimer();
     setScreenBoardClickEvents(displayBoard,remove=true);
 
@@ -103,12 +117,26 @@ function finishGame(winData){
 
 }
 
-function updatePlayerPanelDisplay(player) {
-    whopx.innerText = player === 1 ? "Your Turn" : "Waiting";
-    whopo.innerText = player === 1 ? "Waiting" : "Your Turn";
-    
-    turnpx.style.display = player === 1 ? 'block' : 'none';
-    turnpo.style.display = player === 1 ? 'none' : 'block';
+function updatePlayerPanelDisplay() {
+    if(player === 1)
+    {
+        whopx.innerText = turnOf === 1 ? "Your Turn" : "Waiting";
+        whopo.innerText = turnOf === 1 ? "Waiting" : "Opponent Turn";
+    }
+    else if(player === 2) 
+    {
+        whopx.innerText = turnOf === 2 ?  "Waiting" : "Opponent Turn";
+        whopo.innerText = turnOf === 2 ?  "Your Turn" : "Waiting";
+    } 
+    else
+    {
+        whopx.innerText = turnOf === 1 ?  "Playing" : "Waiting";
+        whopo.innerText = turnOf === 1 ?  "Waiting" : "Playing";
+    }
+
+
+    turnpx.style.display = turnOf === 1 ? 'block' : 'none';
+    turnpo.style.display = turnOf === 1 ? 'none' : 'block';
 
     updateTimerDisplay();
 }
@@ -120,7 +148,7 @@ function updateTimerDisplay(){
 
 function startTimer(){
     INTERVAL_ID = setInterval(() => {
-        player === 1 ? --TIME_PX : --TIME_PO;
+        turnOf === 1 ? --TIME_PX : --TIME_PO;
         updateTimerDisplay();
         if(TIME_PO === 0 || TIME_PX === 0) {
             finishGame({winner: TIME_PO === 0 ? 'X' : 'O'});
@@ -133,4 +161,12 @@ function stopTimer(){
         clearInterval(INTERVAL_ID);
         INTERVAL_ID = null;
     }
+}
+
+function log(msg)
+{
+    const cc = document.getElementById('consolelog');
+    const p = document.createElement('p');
+    p.innerText = msg;
+    cc.appendChild(p);
 }
