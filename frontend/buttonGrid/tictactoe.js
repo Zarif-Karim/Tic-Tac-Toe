@@ -6,6 +6,8 @@
         timer updated in server based on timestamp
 */
 //globals
+let socket = null; 
+if(io) socket = io('http://localhost:5000');
 const displayBoard = getBoard();
 const whopx = document.getElementById("who-px");
 const whopo = document.getElementById("who-po");
@@ -13,126 +15,63 @@ const turnpx = document.getElementById("turn-px");
 const turnpo = document.getElementById("turn-po");
 const timepx = document.getElementById("time-px");
 const timepo = document.getElementById("time-po");
-
+//seconds timer
+let INTERVAL_ID = null;
 //remaining time in seconds, gets updated from server eventually
 //currently doing it client side through functions
-let TIME_PX = 15;
-let TIME_PO = 15;
+const default_time = 300;
 
-startNewBoard();
+let TIME_PX = default_time;
+let TIME_PO = default_time;
 
-//event listeners
-setScreenBoardClickEvents(displayBoard);
+let player = 1; //have to change this eventually
 
-async function updateBoard(i,j,displayBoard){
-    //make the move
-    let data = await getData(i,j,player);
-    console.log(data); //debug
+function updateBoard(board){
+    player += 1; //have to change this eventually
+    if(player > 2) player = 1; //have to change this eventually
+    updatePlayerPanelDisplay(player); //have to change this eventually
 
-    //update board if move successful
-    if(data.update === "success"){
-        player += 1; //have to change this eventually
-        if(player > 2) player = 1; //have to change this eventually
-        updatePlayerPanelDisplay(player); //have to change this eventually
-
-        for(let i in data.board){
-            for(let j in data.board[i]){
-                if(data.board[i][j] !== 0) {
-                    displayBoard[i][j].children[0].
-                    innerText = data.board[i][j] == 1 ? 'X' : 'O';
-                }
+    for(let i in board){
+        for(let j in board[i]){
+            if(board[i][j] !== 0) {
+                displayBoard[i][j].children[0].
+                innerText = board[i][j] == 1 ? 'X' : 'O';
             }
         }
     }
-
-    if(data.game_status === "finished")
-    {
-        finishGame(data);
-    }
 }
 
-function setColorOfBoard(fontColor,backgroundColor)
+if(!socket) {
+    finishGame({});
+    throw new Error('Cannot create socket');
+}
+else 
 {
-    for(let i in displayBoard){
-        for(let j in displayBoard[i]){
-            if(backgroundColor)
-                displayBoard[i][j].style.backgroundColor = backgroundColor;
-            if(fontColor)
-                displayBoard[i][j].children[0].style.color = fontColor;
+    //asking for new board
+    socket.emit('newgame');
+
+    socket.on('status', (data)=>{
+        console.log(data);
+
+        //update board if move successful
+        if(data.update === "success"){
+            updateBoard(data.board);
         }
-    }
 
-}
-
-function finishGame(winData){
-    console.log("Finished", winData);
-    stopTimer();
-    setScreenBoardClickEvents(displayBoard,remove=true);
-
-    //hide green indicator
-    turnpx.style.display = 'none';
-    turnpo.style.display = 'none';
-
-
-    if(winData.winner === 'X'){
-        whopx.innerText = 'Winner';
-        whopo.innerText = 'Looser'
-    }
-    else if(winData.winner === 'O') {
-        whopo.innerText = 'Winner';
-        whopx.innerText = 'Looser'
-    } else {
-        whopx.innerText = 'Draw';
-        whopo.innerText = 'Draw'
-    }
-
-    //grey out all letters
-    setColorOfBoard('grey','#d9d9d9');
-
-    //highlight winning path
-    if('winPath' in winData){
-        for(let [x,y] of winData.winPath){
-            displayBoard[x][y].children[0].style.color = 'red';
+        if(data.game_status === "finished")
+        {
+            finishGame(data);
         }
-    }
+    });
 
-}
+    socket.on('newboard', (data)=>{
+        console.log(`New board: ${data}`);
+        if(data === 'success')
+            startNewBoard();
+    })
 
-function updatePlayerPanelDisplay(player) {
-    whopx.innerText = player === 1 ? "Your Turn" : "Waiting";
-    whopo.innerText = player === 1 ? "Waiting" : "Your Turn";
+    socket.on('showMsg',(msg)=>console.log('showMsg',msg));
     
-    turnpx.style.display = player === 1 ? 'block' : 'none';
-    turnpo.style.display = player === 1 ? 'none' : 'block';
-
-    updateTimerDisplay();
+    //event listeners
+    setScreenBoardClickEvents(displayBoard);
 }
-
-function updateTimerDisplay(){
-    timepx.innerHTML = TIME_PX;
-    timepo.innerHTML = TIME_PO;
-}
-
-
-//seconds timer
-let INTERVAL_ID = null;
-
-function startTimer(){
-    INTERVAL_ID = setInterval(() => {
-        player === 1 ? --TIME_PX : --TIME_PO;
-        updateTimerDisplay();
-        if(TIME_PO === 0 || TIME_PX === 0) {
-            finishGame({winner: TIME_PO === 0 ? 'X' : 'O'});
-        }
-        
-        console.log('tick');
-    }, 1000);
-}
-
-function stopTimer(){
-    if(INTERVAL_ID){
-        clearInterval(INTERVAL_ID);
-        INTERVAL_ID = null;
-    }
-}
-

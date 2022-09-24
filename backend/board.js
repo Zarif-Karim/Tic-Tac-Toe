@@ -100,7 +100,7 @@ class Board
 
         data.board = this.board;
 
-        return JSON.stringify(data);
+        return data;
     }
 };
 
