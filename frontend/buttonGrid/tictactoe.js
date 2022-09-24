@@ -7,7 +7,7 @@
 */
 //globals
 let socket = null; 
-if(io) socket = io('http://localhost:5000');
+if(io) socket = io(); //'http://localhost:5000' //automatically connects to the server serving the file
 const displayBoard = getBoard();
 const whopx = document.getElementById("who-px");
 const whopo = document.getElementById("who-po");
@@ -24,11 +24,9 @@ const default_time = 300;
 let TIME_PX = default_time;
 let TIME_PO = default_time;
 
-let player = 1; //have to change this eventually
+let player = 3; //have to change this eventually
 
 function updateBoard(board){
-    player += 1; //have to change this eventually
-    if(player > 2) player = 1; //have to change this eventually
     updatePlayerPanelDisplay(player); //have to change this eventually
 
     for(let i in board){
@@ -65,13 +63,16 @@ else
     });
 
     socket.on('newboard', (data)=>{
-        console.log(`New board: ${data}`);
-        if(data === 'success')
+        console.log('New board:', data);
+        // log('New Board Created');
+        if(data.status === 'success') {
+            player = data.role;
+            console.log('player',player);
             startNewBoard();
+        }
     })
 
     socket.on('showMsg',(msg)=>console.log('showMsg',msg));
     
     //event listeners
-    setScreenBoardClickEvents(displayBoard);
 }

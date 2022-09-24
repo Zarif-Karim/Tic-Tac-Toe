@@ -6,11 +6,10 @@ document.getElementById("start-new").onclick = ()=>{
 async function startNewBoard() {
     clearBoard();
     setColorOfBoard('black','white');
-    player = 1;
     TIME_PO = default_time;
     TIME_PX = default_time;
     updatePlayerPanelDisplay(player);
-    setScreenBoardClickEvents(displayBoard);
+    setScreenBoardClickEvents(displayBoard,player);
     stopTimer();
     startTimer();
 }
@@ -47,7 +46,8 @@ function clearBoard()
 
 
 //adding click events to all the board buttons to send update request to server
-function setScreenBoardClickEvents(displayBoard, remove = false){
+function setScreenBoardClickEvents(displayBoard, player, remove = false){
+    console.log('Onclick',player)
     for(let i in displayBoard){
         for(let j in displayBoard[i]){
             displayBoard[i][j].onclick = 
@@ -133,4 +133,12 @@ function stopTimer(){
         clearInterval(INTERVAL_ID);
         INTERVAL_ID = null;
     }
+}
+
+function log(msg)
+{
+    const cc = document.getElementById('consolelog');
+    const p = document.createElement('p');
+    p.innerText = msg;
+    cc.appendChild(p);
 }
