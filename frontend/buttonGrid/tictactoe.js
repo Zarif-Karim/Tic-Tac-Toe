@@ -19,13 +19,12 @@ const timepo = document.getElementById("time-po");
 let INTERVAL_ID = null;
 //remaining time in seconds, gets updated from server eventually
 //currently doing it client side through functions
-const default_time = 300;
-
-let TIME_PX = default_time;
-let TIME_PO = default_time;
 
 let player = 3; //have to change this eventually
-
+let default_time = 0;
+let TIME_PX = 0;
+let TIME_PO = 0;
+let turnOf = 1;
 
 if(!socket) {
     finishGame({});
@@ -33,10 +32,14 @@ if(!socket) {
 }
 else 
 {
-    socket.on('role',role=>{
-        player = role;
+    socket.on('initialData',data=>{
+        player = data.role;
+        default_time = data.remaining_time;
+
+        //change this V (spectators are initiation new games);
         //asking for new board
         socket.emit('newgame');
+        document.getElementById("start-new").hidden = true;
     });
 
     socket.on('status', (data)=>{
@@ -44,7 +47,7 @@ else
 
         //update board if move successful
         if(data.update === "success"){
-            updateBoard(data.board);
+            updateBoard(data.board,data.turnOf);
         }
 
         if(data.game_status === "finished")
@@ -55,13 +58,13 @@ else
 
     socket.on('newboard', (data)=>{
         console.log('New board:', data);
-        if(data.status === 'success') {
-            startNewBoard();
-        }
+        startNewBoard(data.turnOf);
+        // if(data.status === 'success') {
+        // } else { //this is a spectator
+            
+        // }
     });
 
-    
-    socket.on('showMsg',(msg)=>console.log('showMsg',msg));
-    
-    //event listeners
+    //debug
+    // socket.on('showMsg',(msg)=>console.log('showMsg',msg));
 }

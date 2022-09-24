@@ -36,19 +36,23 @@ let oFilled = false;
 let player = 1;
 
 io.on('connection',(socket)=>{
-    if(connections.size < 2){
-        if(!xFilled) {
-            connections.set(socket.id,{role: 1});
-            xFilled = true;
-        }
-        else if(!oFilled) {
-            connections.set(socket.id,{role: 2});
-            oFilled = true;
-        }   
-    } else connections.set(socket.id,{role: 3}); //spectator
+    
+    if(!xFilled) {
+        connections.set(socket.id,{role: 1});
+        xFilled = true;
+    }
+    else if(!oFilled) {
+        connections.set(socket.id,{role: 2});
+        oFilled = true;
+    }   
+    else connections.set(socket.id,{role: 3}); //spectator
 
     console.log(`New Connection: ${socket.id}, role: ${connections.get(socket.id).role}`);
-    socket.emit('role', connections.get(socket.id).role);
+    console.log('connections:',connections);
+    socket.emit('initialData', {
+        role: connections.get(socket.id).role,
+        remaining_time: 5
+    });
     
     socket.on('disconnect',()=> {
         const conRole = connections.get(socket.id).role;
@@ -57,6 +61,7 @@ io.on('connection',(socket)=>{
 
         console.log(`Disconnected: ${socket.id}, role: ${connections.get(socket.id).role}`);
         connections.delete(socket.id);
+        console.log('connections:',connections);
     });
 
     socket.on('move', (r,c,p)=>{
@@ -66,20 +71,28 @@ io.on('connection',(socket)=>{
             
             const updateStatus = board.update(r,c,p);
             const data = board.serialize(updateStatus,p);
+            data.turnOf = player;
             if(updateStatus){
                 player += 1;
                 if(player > 2) player = 1;
-                socket.broadcast.emit('status', data);
-            }
-            socket.emit('status', data);
+                data.turnOf = player;
+                io.emit('status', data);
+            } else socket.emit('status', data);
         }
     });
 
     socket.on('newgame',()=>{
-        console.log('New board requested');
-        board = new Board();
-        player = 1;
-        io.emit('newboard',{status: 'success'});
+        const p = connections.get(socket.id).role;
+        if(p === 1 || p === 2){
+            console.log('New board requested');
+            board = new Board();
+            player = 1;
+            io.emit('newboard',{status: 'success', turnOf: 1});
+        }
+        else {
+            console.log('New Board SPectator')
+            socket.emit('newboard',{status: 'false', data: board.serialize(false,3), turnOf: player});
+        }
     });
 
     socket.on('message', (msg)=>{

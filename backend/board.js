@@ -81,20 +81,28 @@ class Board
         return false;
     }
 
-    serialize(updateStatus,player)
+    gameStatus()
     {
         const data = {};
 
-        if(updateStatus != null)
-            data.update = updateStatus? "success" : "fail";
-            
         if(this.moves >= 9)
             data.winner = 'draw';
 
         if(this.#checkWin(player))
             data.winner = player == 1 ? 'X' : 'O';
-
+        
         data.game_status = ('winner' in data) ? 'finished' : 'ongoing';
+
+        return data;
+    }
+
+    //should consider renaming the function
+    serialize(updateStatus,player)
+    {
+        const data = this.gameStatus();
+
+        if(updateStatus != null)
+            data.update = updateStatus? "success" : "fail";         
 
         if(this.winPath) data.winPath = this.winPath;
 
