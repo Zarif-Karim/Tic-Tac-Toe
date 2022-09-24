@@ -28,10 +28,17 @@ function getBoard(){
     return b;  
 };  
 
-//sends the move to the server and gets success message and data
-async function getData(i,j,p){
-    const resp = await fetch(`http://localhost:5000?r=${i}&c=${j}&p=${player}`);
-    return await resp.json();
+function updateBoard(board){
+    updatePlayerPanelDisplay(player); //have to change this eventually
+
+    for(let i in board){
+        for(let j in board[i]){
+            if(board[i][j] !== 0) {
+                displayBoard[i][j].children[0].
+                innerText = board[i][j] == 1 ? 'X' : 'O';
+            }
+        }
+    }
 }
 
 function clearBoard()

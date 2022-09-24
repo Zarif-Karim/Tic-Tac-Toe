@@ -48,6 +48,7 @@ io.on('connection',(socket)=>{
     } else connections.set(socket.id,{role: 3}); //spectator
 
     console.log(`New Connection: ${socket.id}, role: ${connections.get(socket.id).role}`);
+    socket.emit('role', connections.get(socket.id).role);
     
     socket.on('disconnect',()=> {
         const conRole = connections.get(socket.id).role;
@@ -65,28 +66,24 @@ io.on('connection',(socket)=>{
             
             const updateStatus = board.update(r,c,p);
             const data = board.serialize(updateStatus,p);
-            socket.emit('status', data);
             if(updateStatus){
                 player += 1;
                 if(player > 2) player = 1;
                 socket.broadcast.emit('status', data);
             }
+            socket.emit('status', data);
         }
     });
 
     socket.on('newgame',()=>{
         console.log('New board requested');
         board = new Board();
-        const payload = {
-            status:'success', 
-            role: connections.get(socket.id).role
-        };
-        socket.emit('newboard',payload);
+        player = 1;
+        io.emit('newboard',{status: 'success'});
     });
 
     socket.on('message', (msg)=>{
         console.log('Emitting',msg);
-        socket.emit('showMsg', msg);
-        socket.broadcast.emit('showMsg', msg);
+        io.emit('showMsg', msg);
     });
 });

@@ -26,18 +26,6 @@ let TIME_PO = default_time;
 
 let player = 3; //have to change this eventually
 
-function updateBoard(board){
-    updatePlayerPanelDisplay(player); //have to change this eventually
-
-    for(let i in board){
-        for(let j in board[i]){
-            if(board[i][j] !== 0) {
-                displayBoard[i][j].children[0].
-                innerText = board[i][j] == 1 ? 'X' : 'O';
-            }
-        }
-    }
-}
 
 if(!socket) {
     finishGame({});
@@ -45,8 +33,11 @@ if(!socket) {
 }
 else 
 {
-    //asking for new board
-    socket.emit('newgame');
+    socket.on('role',role=>{
+        player = role;
+        //asking for new board
+        socket.emit('newgame');
+    });
 
     socket.on('status', (data)=>{
         console.log(data);
@@ -64,14 +55,12 @@ else
 
     socket.on('newboard', (data)=>{
         console.log('New board:', data);
-        // log('New Board Created');
         if(data.status === 'success') {
-            player = data.role;
-            console.log('player',player);
             startNewBoard();
         }
-    })
+    });
 
+    
     socket.on('showMsg',(msg)=>console.log('showMsg',msg));
     
     //event listeners
