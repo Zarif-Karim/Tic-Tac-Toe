@@ -1,0 +1,20 @@
+Jotting down everything that is coming to my head here!!
+
+Feature:
+    - players add nicknames/titles
+    - best of 3/5/7 etc
+    - swap player symbol between games (first game x second game o etc)
+    - Show viewers list (numbers, names)
+    - Make viewers chat 
+    - create rooms/lobby
+
+
+Backend todo:
+    - create->test timestamp functionality [priority high] needed for viewers time sync, research other ways of doing it
+
+
+Front end:
+    - make responsive mobile design ( maybe start with everything scaling up/down with screen?)
+
+Reality check:
+    - get a working game -> deploy -> then add more features (dont get stuck on forever developing and never deploying)

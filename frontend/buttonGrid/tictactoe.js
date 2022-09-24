@@ -2,7 +2,9 @@
 /*
     refactor to OO style
     refactor to get data from server and update:
-        player id
+        player id:
+            -getting player symbol from server (done)
+            -
         timer updated in server based on timestamp
 */
 //globals
