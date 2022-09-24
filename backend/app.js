@@ -41,6 +41,12 @@ io.on('connection',(socket)=>{
         const updateStatus = board.update(r,c,p);
         socket.emit('status',board.serialize(updateStatus,p));
     });
+
+    socket.on('newgame',()=>{
+        console.log('New board requested');
+        board = new Board();
+        socket.emit('newboard','success');
+    });
 });
 
 server.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));

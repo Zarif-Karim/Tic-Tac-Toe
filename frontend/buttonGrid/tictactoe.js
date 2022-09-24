@@ -30,9 +30,8 @@ if(!socket) {
 }
 else 
 {
-    socket.on('message',(data)=>{
-        console.log(`message: ${data}`);
-    });
+    //asking for new board
+    socket.emit('newgame');
 
     socket.on('status', (data)=>{
         console.log(data);
@@ -58,9 +57,13 @@ else
             finishGame(data);
         }
     });
+
+    socket.on('newboard', (data)=>{
+        console.log(`New board: ${data}`);
+        if(data === 'success')
+            startNewBoard();
+    })
+    
+    //event listeners
+    setScreenBoardClickEvents(displayBoard);
 }
-
-startNewBoard();
-
-//event listeners
-setScreenBoardClickEvents(displayBoard);

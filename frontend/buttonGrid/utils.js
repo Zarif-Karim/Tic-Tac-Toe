@@ -1,22 +1,19 @@
-document.getElementById("start-new").onclick = startNewBoard;
+document.getElementById("start-new").onclick = ()=>{
+    console.log('start-new clicked');
+    socket.emit('newgame');
+};
 
 //start new board
 async function startNewBoard() {
-    await fetch(`http://localhost:5000/newgame`)
-    .then(resp=>resp.text())
-    .then(data=>{
-        console.log(data);
-        clearBoard();
-        setColorOfBoard('black','white');
-        player = 1;
-        TIME_PO = 15;
-        TIME_PX = 15;
-        updatePlayerPanelDisplay(player);
-        setScreenBoardClickEvents(displayBoard);
-        stopTimer();
-        startTimer();
-    })
-    .catch(err=>console.log(err));
+    clearBoard();
+    setColorOfBoard('black','white');
+    player = 1;
+    TIME_PO = 15;
+    TIME_PX = 15;
+    updatePlayerPanelDisplay(player);
+    setScreenBoardClickEvents(displayBoard);
+    stopTimer();
+    startTimer();
 }
     
 //getting all the button elemets of the board
@@ -129,8 +126,6 @@ function startTimer(){
         if(TIME_PO === 0 || TIME_PX === 0) {
             finishGame({winner: TIME_PO === 0 ? 'X' : 'O'});
         }
-        
-        console.log('tick');
     }, 1000);
 }
 
