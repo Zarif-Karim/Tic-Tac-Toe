@@ -19,10 +19,27 @@ const timepo = document.getElementById("time-po");
 let INTERVAL_ID = null;
 //remaining time in seconds, gets updated from server eventually
 //currently doing it client side through functions
-let TIME_PX = 15;
-let TIME_PO = 15;
+const default_time = 300;
+
+let TIME_PX = default_time;
+let TIME_PO = default_time;
 
 let player = 1; //have to change this eventually
+
+function updateBoard(board){
+    player += 1; //have to change this eventually
+    if(player > 2) player = 1; //have to change this eventually
+    updatePlayerPanelDisplay(player); //have to change this eventually
+
+    for(let i in board){
+        for(let j in board[i]){
+            if(board[i][j] !== 0) {
+                displayBoard[i][j].children[0].
+                innerText = board[i][j] == 1 ? 'X' : 'O';
+            }
+        }
+    }
+}
 
 if(!socket) {
     finishGame({});
@@ -38,18 +55,7 @@ else
 
         //update board if move successful
         if(data.update === "success"){
-            player += 1; //have to change this eventually
-            if(player > 2) player = 1; //have to change this eventually
-            updatePlayerPanelDisplay(player); //have to change this eventually
-
-            for(let i in data.board){
-                for(let j in data.board[i]){
-                    if(data.board[i][j] !== 0) {
-                        displayBoard[i][j].children[0].
-                        innerText = data.board[i][j] == 1 ? 'X' : 'O';
-                    }
-                }
-            }
+            updateBoard(data.board);
         }
 
         if(data.game_status === "finished")
@@ -63,6 +69,8 @@ else
         if(data === 'success')
             startNewBoard();
     })
+
+    socket.on('showMsg',(msg)=>console.log('showMsg',msg));
     
     //event listeners
     setScreenBoardClickEvents(displayBoard);

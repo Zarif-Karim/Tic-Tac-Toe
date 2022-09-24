@@ -1,5 +1,4 @@
 document.getElementById("start-new").onclick = ()=>{
-    console.log('start-new clicked');
     socket.emit('newgame');
 };
 
@@ -8,8 +7,8 @@ async function startNewBoard() {
     clearBoard();
     setColorOfBoard('black','white');
     player = 1;
-    TIME_PO = 15;
-    TIME_PX = 15;
+    TIME_PO = default_time;
+    TIME_PX = default_time;
     updatePlayerPanelDisplay(player);
     setScreenBoardClickEvents(displayBoard);
     stopTimer();
