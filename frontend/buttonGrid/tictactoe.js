@@ -6,6 +6,8 @@
         timer updated in server based on timestamp
 */
 //globals
+let socket = null; 
+if(io) socket = io('http://localhost:5000');
 const displayBoard = getBoard();
 const whopx = document.getElementById("who-px");
 const whopo = document.getElementById("who-po");
@@ -18,6 +20,12 @@ const timepo = document.getElementById("time-po");
 //currently doing it client side through functions
 let TIME_PX = 15;
 let TIME_PO = 15;
+
+if(socket) {
+    socket.on('message',(data)=>{
+        console.log(`message: ${data}`);
+    });
+}
 
 startNewBoard();
 

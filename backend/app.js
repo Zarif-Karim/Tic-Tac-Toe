@@ -1,11 +1,16 @@
+const http = require('http');
 const cors = require('cors');
-const app = require('express')();
+const express = require('express');
+const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server, {cors: {origin: "*"}});
 const port = 5000;
 
 const Board = require('./board');
 let board = new Board();
 
 app.use(cors());
+app.use(express.static('../frontend/buttonGrid'))
 
 app.get('/',(req,res)=>{
     console.log(req.url, req.query);
@@ -25,4 +30,13 @@ app.all('*',(req,res)=>{
     res.send(`404: NOT FOUND`);
 });
 
-app.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));
+io.on('connection',(socket)=>{
+    console.log(`New Connection: ${socket.id}`);
+    socket.on('disconnect',()=> {
+        console.log(`Disconnected: ${socket.id}`)
+    });
+
+    socket.emit('message','this is a test');
+});
+
+server.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));
