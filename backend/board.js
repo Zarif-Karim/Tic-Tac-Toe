@@ -81,7 +81,7 @@ class Board
         return false;
     }
 
-    gameStatus()
+    gameStatus(player)
     {
         const data = {};
 
@@ -99,7 +99,7 @@ class Board
     //should consider renaming the function
     serialize(updateStatus,player)
     {
-        const data = this.gameStatus();
+        const data = this.gameStatus(player);
 
         if(updateStatus != null)
             data.update = updateStatus? "success" : "fail";         
