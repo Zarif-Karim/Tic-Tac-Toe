@@ -84,7 +84,8 @@ function setColorOfBoard(fontColor,backgroundColor)
 
 function finishGame(winData){
     console.log("Finished", winData);
-    document.getElementById("start-new").hidden = false;
+    //dont show button for spectators
+    if(player !== 3) document.getElementById("start-new").hidden = false;
     stopTimer();
     setScreenBoardClickEvents(displayBoard,remove=true);
 

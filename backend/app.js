@@ -3,13 +3,14 @@ const cors = require('cors');
 const express = require('express');
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server, {cors: {origin: "http://localhost:5000"}});
+const io = require('socket.io')(server, {cors: {origin: "*"}});
 const port = 5000;
 
 const Board = require('./board');
 let board = new Board();
 
 app.use(cors());
+
 app.use(express.static('../frontend/buttonGrid'))
 
 // app.get('/',(req,res)=>{
@@ -51,7 +52,7 @@ io.on('connection',(socket)=>{
     console.log('connections:',connections);
     socket.emit('initialData', {
         role: connections.get(socket.id).role,
-        remaining_time: 5
+        remaining_time: 50
     });
     
     socket.on('disconnect',()=> {
@@ -65,7 +66,7 @@ io.on('connection',(socket)=>{
     });
 
     socket.on('move', (r,c,p)=>{
-        console.log(r,c,p,socket.id);
+        // console.log(r,c,p,socket.id);
 
         if(player === p) {
             
@@ -90,7 +91,7 @@ io.on('connection',(socket)=>{
             io.emit('newboard',{status: 'success', turnOf: 1});
         }
         else {
-            console.log('New Board SPectator')
+            console.log('New Board Spectator')
             socket.emit('newboard',{status: 'false', data: board.serialize(false,3), turnOf: player});
         }
     });
