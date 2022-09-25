@@ -3,12 +3,12 @@ document.getElementById("start-new").onclick = ()=>{
 };
 
 //start new board
-async function startNewBoard(_turnOf) {
+async function startNewBoard(_turnOf,rtp1,rtp2) {
     document.getElementById("start-new").hidden = true;
     clearBoard();
     setColorOfBoard('black','white');
-    TIME_PX = default_time;
-    TIME_PO = default_time;
+    TIME_PX = rtp1;
+    TIME_PO = rtp2;
     turnOf = _turnOf;
     updatePlayerPanelDisplay();
     setScreenBoardClickEvents(displayBoard/*,player*/);
@@ -116,6 +116,10 @@ function finishGame(winData){
         }
     }
 
+    TIME_PX = winData.rtp1;
+    TIME_PO = winData.rtp2;
+
+    updateTimerDisplay();
 }
 
 function updatePlayerPanelDisplay() {
@@ -152,7 +156,8 @@ function startTimer(){
         turnOf === 1 ? --TIME_PX : --TIME_PO;
         updateTimerDisplay();
         if(TIME_PO === 0 || TIME_PX === 0) {
-            finishGame({winner: TIME_PO === 0 ? 'X' : 'O'});
+            //finishGame({winner: TIME_PO === 0 ? 'X' : 'O'});
+            stopTimer();
         }
     }, 1000);
 }

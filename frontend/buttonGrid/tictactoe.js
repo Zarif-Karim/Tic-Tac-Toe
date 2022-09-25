@@ -23,7 +23,6 @@ let INTERVAL_ID = null;
 //currently doing it client side through functions
 
 let player = 3; //have to change this eventually
-let default_time = 0;
 let TIME_PX = 0;
 let TIME_PO = 0;
 let turnOf = 1;
@@ -36,11 +35,11 @@ else
 {
     socket.on('initialData',data=>{
         player = data.role;
-        default_time = data.remaining_time;
-
+        TIME_PX = data.rtp1;
+        TIME_PO = data.rtp2;
         //change this V (spectators are initiation new games);
         //asking for new board
-        socket.emit('newgame');
+        socket.emit(player !== 3 ? 'newgame' : 'getgame');
         document.getElementById("start-new").hidden = true;
     });
 
@@ -60,11 +59,18 @@ else
 
     socket.on('newboard', (data)=>{
         console.log('New board:', data);
-        startNewBoard(data.turnOf);
-        // if(data.status === 'success') {
-        // } else { //this is a spectator
-            
-        // }
+        startNewBoard(data.turnOf,data.rtp1,data.rtp2);
+    });
+
+    socket.on('spectator-setup', (data) => {
+        console.log(data);
+        const {board,turnOf,rtp1,rtp2,game_status,winPath} = data;
+        if(game_status === "ongoing"){
+            startNewBoard(turnOf,rtp1,rtp2);
+            updateBoard(board,turnOf);
+        } else {
+            finishGame(data);
+        }
     });
 
     //debug
