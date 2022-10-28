@@ -21,6 +21,11 @@ module.exports = function(io) {
     function startTimer(){
         INTERVAL_ID = setInterval(() => {
             player === 1 ? --rtp1 : --rtp2;
+            io.emit('tick', {
+                turnOf: player,
+                rtp1,
+                rtp2
+            });
             if(rtp1 === 0 || rtp2 === 0) {
                 //board.moves = 10;
                 //get win status and send
@@ -33,7 +38,7 @@ module.exports = function(io) {
                 });
                 stopTimer();
             }
-            console.log('tick',rtp1,rtp2);
+            // console.log('tick',rtp1,rtp2);
         }, 1000);
     }
     

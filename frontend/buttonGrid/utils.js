@@ -12,8 +12,6 @@ async function startNewBoard(_turnOf,rtp1,rtp2) {
     turnOf = _turnOf;
     updatePlayerPanelDisplay();
     setScreenBoardClickEvents(displayBoard/*,player*/);
-    stopTimer();
-    startTimer();
 }
     
 //getting all the button elemets of the board
@@ -86,7 +84,6 @@ function finishGame(winData){
     console.log("Finished", winData);
     //dont show button for spectators
     if(player !== 3) document.getElementById("start-new").hidden = false;
-    stopTimer();
     setScreenBoardClickEvents(displayBoard,remove=true);
 
     //hide green indicator
@@ -119,7 +116,6 @@ function finishGame(winData){
     TIME_PX = winData.rtp1;
     TIME_PO = winData.rtp2;
 
-    updateTimerDisplay();
 }
 
 function updatePlayerPanelDisplay() {
@@ -143,30 +139,6 @@ function updatePlayerPanelDisplay() {
     turnpx.style.display = turnOf === 1 ? 'block' : 'none';
     turnpo.style.display = turnOf === 1 ? 'none' : 'block';
 
-    updateTimerDisplay();
-}
-
-function updateTimerDisplay(){
-    timepx.innerHTML = TIME_PX;
-    timepo.innerHTML = TIME_PO;
-}
-
-function startTimer(){
-    INTERVAL_ID = setInterval(() => {
-        turnOf === 1 ? --TIME_PX : --TIME_PO;
-        updateTimerDisplay();
-        if(TIME_PO === 0 || TIME_PX === 0) {
-            //finishGame({winner: TIME_PO === 0 ? 'X' : 'O'});
-            stopTimer();
-        }
-    }, 1000);
-}
-
-function stopTimer(){
-    if(INTERVAL_ID){
-        clearInterval(INTERVAL_ID);
-        INTERVAL_ID = null;
-    }
 }
 
 function log(msg)

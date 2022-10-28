@@ -25,7 +25,7 @@ app.use(express.static('../frontend/buttonGrid'))
 app.all('*',(req,res)=>{
     console.log('all', req.url, req.query);
     //redirecting all urls to tictactoe
-    res.redirect('http://192.168.0.120:5000/tictactoe.html');
+    res.redirect('http://localhost:5000/tictactoe.html');
 });
 
 server.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));

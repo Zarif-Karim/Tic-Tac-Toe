@@ -1,11 +1,6 @@
 //to-do
 /*
     refactor to OO style
-    refactor to get data from server and update:
-        player id:
-            -getting player symbol from server (done)
-            -
-        timer updated in server based on timestamp
 */
 //globals
 let socket = null; 
@@ -18,10 +13,7 @@ const turnpo = document.getElementById("turn-po");
 const timepx = document.getElementById("time-px");
 const timepo = document.getElementById("time-po");
 //seconds timer
-let INTERVAL_ID = null;
-//remaining time in seconds, gets updated from server eventually
-//currently doing it client side through functions
-
+//remaining time in seconds, gets updated from server 
 let player = 3; //have to change this eventually
 let TIME_PX = 0;
 let TIME_PO = 0;
@@ -71,6 +63,15 @@ else
         } else {
             finishGame(data);
         }
+    });
+
+    socket.on('tick', (data)=> {
+        console.log(data);
+        turnOf = data.turnOf;
+        TIME_PX = data.rtp1;
+        TIME_PO = data.rtp2;
+        timepx.innerHTML = TIME_PX;
+        timepo.innerHTML = TIME_PO;
     });
 
     //debug
