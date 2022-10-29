@@ -54,7 +54,7 @@ function clearBoard()
 
 //adding click events to all the board buttons to send update request to server
 function setScreenBoardClickEvents(displayBoard/*, player*/, remove = false){
-    console.log('Onclick',player)
+    // console.log('Onclick',player)
     for(let i in displayBoard){
         for(let j in displayBoard[i]){
             displayBoard[i][j].onclick = 
@@ -86,9 +86,9 @@ function finishGame(winData){
     if(player !== 3) document.getElementById("start-new").hidden = false;
     setScreenBoardClickEvents(displayBoard,remove=true);
 
-    //hide green indicator
-    turnpx.style.display = 'none';
-    turnpo.style.display = 'none';
+    //hide green indicator: find other means of indicating
+    // turnpx.style.display = 'none';
+    // turnpo.style.display = 'none';
 
 
     if(winData.winner === 'X'){
@@ -135,10 +135,17 @@ function updatePlayerPanelDisplay() {
         whopo.innerText = turnOf === 1 ?  "Waiting" : "Playing";
     }
 
+    // find other means of indicating
+    // turnpx.style.display = turnOf === 1 ? 'block' : 'none';
+    // turnpo.style.display = turnOf === 1 ? 'none' : 'block';
 
-    turnpx.style.display = turnOf === 1 ? 'block' : 'none';
-    turnpo.style.display = turnOf === 1 ? 'none' : 'block';
+    updatePlayerTimes();
 
+}
+
+function updatePlayerTimes() {
+    timepx.innerHTML = TIME_PX;
+    timepo.innerHTML = TIME_PO;
 }
 
 function log(msg)

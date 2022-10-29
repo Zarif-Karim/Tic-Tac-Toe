@@ -8,8 +8,8 @@ if(io) socket = io(); //'http://localhost:5000' //automatically connects to the 
 const displayBoard = getBoard();
 const whopx = document.getElementById("who-px");
 const whopo = document.getElementById("who-po");
-const turnpx = document.getElementById("turn-px");
-const turnpo = document.getElementById("turn-po");
+// const turnpx = document.getElementById("turn-px");
+// const turnpo = document.getElementById("turn-po");
 const timepx = document.getElementById("time-px");
 const timepo = document.getElementById("time-po");
 //seconds timer
@@ -66,12 +66,11 @@ else
     });
 
     socket.on('tick', (data)=> {
-        console.log(data);
+        // console.log(data);
         turnOf = data.turnOf;
         TIME_PX = data.rtp1;
         TIME_PO = data.rtp2;
-        timepx.innerHTML = TIME_PX;
-        timepo.innerHTML = TIME_PO;
+        updatePlayerTimes();
     });
 
     //debug

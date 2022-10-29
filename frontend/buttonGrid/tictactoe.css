@@ -17,32 +17,28 @@ h1 {
 }
 
 .main-container {
-    display: flex;
-    justify-content: center;
+    text-align: center;
     height: 500px;
     width: 100vw;    
-    margin: 50px 0px;
 }
 
 .player-panel {
-    /* display: inline-block; */
+    display: inline-block;
     background-color: antiquewhite;
-    width: 15vw;
-    max-width: 200px;
     border-radius: 10px;
     box-shadow: 5px 5px 30px;
     text-align: center;
-    padding: 50px;
+    padding: 20px;
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 #board-container {
-    display: inline-block;
+    display: block;
     width: 500px;
     height: 100%;
-    margin: 0px 100px;
+    margin: 30px auto;
     box-shadow: 5px 5px 30px;
-    flex-shrink: 0;
+    text-align: center;
 }
 
 .row {
@@ -74,9 +70,9 @@ h1 {
 }
 
 .util-button-row {
-    display:flex;
-    justify-content: center;
-    margin: 50px 25%;
+    /* display:flex; */
+    text-align: center;
+    margin: 50px auto;
     padding: 20px;
     
 }
@@ -99,14 +95,6 @@ button:hover {
     transform: scale(1.02);
 }
 
-.green-indicator{
-    width: 100px;
-    height: 100px;
-    margin: 20px auto;
-    background-color: green;
-    border-radius: 50%;
-}
-
 .player-panel-title {
     width: 100%;
     padding: 20px 0px;
@@ -123,4 +111,21 @@ button:hover {
     font-size: 3em;
     margin-top: 0px;
     margin-bottom: 30px;
+}
+
+@media screen and (max-width: 550px) {
+     
+    #board-container {
+        width: 95%;
+        height: auto;
+    }
+
+    .util-button-row button {
+        width: 60vw;
+    }
+
+    .grid-value {
+        font-size: 0.8em;
+    }
+
 }
