@@ -37,6 +37,7 @@ module.exports = function(io) {
                     rtp1,rtp2
                 });
                 stopTimer();
+                console.log('Game Finished');
             }
             // console.log('tick',rtp1,rtp2);
         }, 1000);
@@ -90,6 +91,7 @@ module.exports = function(io) {
                     stopTimer();
                     data.rtp1 = rtp1;
                     data.rtp2 = rtp2;
+                    console.log('Game Finished');
                 }
                 if(updateStatus){
                     player += 1;
