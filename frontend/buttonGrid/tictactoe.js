@@ -1,11 +1,6 @@
 //to-do
 /*
     refactor to OO style
-    refactor to get data from server and update:
-        player id:
-            -getting player symbol from server (done)
-            -
-        timer updated in server based on timestamp
 */
 //globals
 let socket = null; 
@@ -18,12 +13,8 @@ const turnpo = document.getElementById("turn-po");
 const timepx = document.getElementById("time-px");
 const timepo = document.getElementById("time-po");
 //seconds timer
-let INTERVAL_ID = null;
-//remaining time in seconds, gets updated from server eventually
-//currently doing it client side through functions
-
+//remaining time in seconds, gets updated from server 
 let player = 3; //have to change this eventually
-let default_time = 0;
 let TIME_PX = 0;
 let TIME_PO = 0;
 let turnOf = 1;
@@ -36,11 +27,11 @@ else
 {
     socket.on('initialData',data=>{
         player = data.role;
-        default_time = data.remaining_time;
-
+        TIME_PX = data.rtp1;
+        TIME_PO = data.rtp2;
         //change this V (spectators are initiation new games);
         //asking for new board
-        socket.emit('newgame');
+        socket.emit(player !== 3 ? 'newgame' : 'getgame');
         document.getElementById("start-new").hidden = true;
     });
 
@@ -60,11 +51,27 @@ else
 
     socket.on('newboard', (data)=>{
         console.log('New board:', data);
-        startNewBoard(data.turnOf);
-        // if(data.status === 'success') {
-        // } else { //this is a spectator
-            
-        // }
+        startNewBoard(data.turnOf,data.rtp1,data.rtp2);
+    });
+
+    socket.on('spectator-setup', (data) => {
+        console.log(data);
+        const {board,turnOf,rtp1,rtp2,game_status,winPath} = data;
+        if(game_status === "ongoing"){
+            startNewBoard(turnOf,rtp1,rtp2);
+            updateBoard(board,turnOf);
+        } else {
+            finishGame(data);
+        }
+    });
+
+    socket.on('tick', (data)=> {
+        console.log(data);
+        turnOf = data.turnOf;
+        TIME_PX = data.rtp1;
+        TIME_PO = data.rtp2;
+        timepx.innerHTML = TIME_PX;
+        timepo.innerHTML = TIME_PO;
     });
 
     //debug

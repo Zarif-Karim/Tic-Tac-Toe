@@ -27,7 +27,8 @@ h1 {
 .player-panel {
     display: inline-block;
     background-color: antiquewhite;
-    width: 200px;
+    width: 15vw;
+    max-width: 200px;
     border-radius: 10px;
     box-shadow: 5px 5px 30px;
     text-align: center;
@@ -68,6 +69,7 @@ h1 {
 
 .grid-value {
     display:inline-block;
+    font-size: 1em;
 }
 
 .util-button-row {

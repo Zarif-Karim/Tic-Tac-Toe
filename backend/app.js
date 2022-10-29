@@ -4,10 +4,9 @@ const express = require('express');
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {cors: {origin: "*"}});
+require('./socketevents.js')(io);
 const port = 5000;
 
-const Board = require('./board');
-let board = new Board();
 
 app.use(cors());
 
@@ -26,78 +25,7 @@ app.use(express.static('../frontend/buttonGrid'))
 app.all('*',(req,res)=>{
     console.log('all', req.url, req.query);
     //redirecting all urls to tictactoe
-    res.redirect('http://192.168.0.120:5000/tictactoe.html');
+    res.redirect('http://localhost:5000/tictactoe.html');
 });
 
 server.listen(port, ()=> console.log(`Server Started: http://localhost::${port}`));
-
-const connections = new Map();
-let xFilled = false;
-let oFilled = false;
-let player = 1;
-
-io.on('connection',(socket)=>{
-    
-    if(!xFilled) {
-        connections.set(socket.id,{role: 1});
-        xFilled = true;
-    }
-    else if(!oFilled) {
-        connections.set(socket.id,{role: 2});
-        oFilled = true;
-    }   
-    else connections.set(socket.id,{role: 3}); //spectator
-
-    console.log(`New Connection: ${socket.id}, role: ${connections.get(socket.id).role}`);
-    console.log('connections:',connections);
-    socket.emit('initialData', {
-        role: connections.get(socket.id).role,
-        remaining_time: 50
-    });
-    
-    socket.on('disconnect',()=> {
-        const conRole = connections.get(socket.id).role;
-        if(conRole===1) xFilled = false;
-        else if(conRole===2) oFilled = false;
-
-        console.log(`Disconnected: ${socket.id}, role: ${connections.get(socket.id).role}`);
-        connections.delete(socket.id);
-        console.log('connections:',connections);
-    });
-
-    socket.on('move', (r,c,p)=>{
-        // console.log(r,c,p,socket.id);
-
-        if(player === p) {
-            
-            const updateStatus = board.update(r,c,p);
-            const data = board.serialize(updateStatus,p);
-            data.turnOf = player;
-            if(updateStatus){
-                player += 1;
-                if(player > 2) player = 1;
-                data.turnOf = player;
-                io.emit('status', data);
-            } else socket.emit('status', data);
-        }
-    });
-
-    socket.on('newgame',()=>{
-        const p = connections.get(socket.id).role;
-        if(p === 1 || p === 2){
-            console.log('New board requested');
-            board = new Board();
-            player = 1;
-            io.emit('newboard',{status: 'success', turnOf: 1});
-        }
-        else {
-            console.log('New Board Spectator')
-            socket.emit('newboard',{status: 'false', data: board.serialize(false,3), turnOf: player});
-        }
-    });
-
-    socket.on('message', (msg)=>{
-        console.log('Emitting',msg);
-        io.emit('showMsg', msg);
-    });
-});

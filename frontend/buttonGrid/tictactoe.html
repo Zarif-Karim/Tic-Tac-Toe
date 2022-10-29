@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="tictactoe.css">
+    <script src="utils.js" defer></script>
+    <script src="tictactoe.js" defer></script>
     <title>Tic-Tac-Toe</title>
 </head>
 
@@ -18,7 +20,7 @@
             <span class="player-panel-title">Player X</span>
             <h3 class="who" id="who-px">Who</h3>
             <span>Time Remaining:</span>
-            <h4 class="remaining-time" id="time-px">120 s</h4>
+            <h4 class="remaining-time" id="time-px">--- s</h4>
             <div class="green-indicator" id="turn-px"></div>
         </div>
         <div id="board-container">
@@ -42,7 +44,7 @@
             <span class="player-panel-title">Player O</span>
             <h3 class="who" id="who-po">Who</h3>
             <span>Time Remaining:</span>
-            <h4 class="remaining-time" id="time-po">120 s</h4>
+            <h4 class="remaining-time" id="time-po">--- s</h4>
             <div class="green-indicator" id="turn-po"></div>
         </div>
     </div>
@@ -53,8 +55,6 @@
     <!-- <div id="consolelog">
         <h2>console log</h2>
     </div> -->
-    <script src="utils.js"></script>
-    <script src="tictactoe.js"></script>
 </body>
 
 </html>
