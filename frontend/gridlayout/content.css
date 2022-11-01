@@ -1,7 +1,3 @@
-div {
-    /* border: 1px solid black; */
-}
-
 .content {
     display: grid;
     /* gap: 10px; */
@@ -125,18 +121,18 @@ ul li {
 
 .online-users-list li{
     text-align: center;
+    justify-content: center;
 }
 
 @media (min-width: 650px) {
     .chat-window {
         width: 500px;
-        justify-self: center;
+        text-align: justify;
     }
     
     ul li {
         padding: 2px;
         font-size: 0.9em;
-        padding-left: 10px;
     }
 
     .player-stats {
