@@ -10,7 +10,7 @@ module.exports = function(io) {
     let xFilled = false;
     let oFilled = false;
     let player = 1;
-    let ttpp = 10; //total time per player in seconds
+    let ttpp = 5; //total time per player in seconds
     let rtp1 = ttpp; //timestamp of move update
     let rtp2 = ttpp; 
     
