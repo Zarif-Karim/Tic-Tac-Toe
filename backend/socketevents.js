@@ -9,10 +9,10 @@ module.exports = function(io) {
     
     let xFilled = false;
     let oFilled = false;
-    let player = 1;
-    let ttpp = 5; //total time per player in seconds
-    let rtp1 = ttpp; //timestamp of move update
-    let rtp2 = ttpp; 
+    let player = 2;
+    let ttpp = 500; //total time per player in seconds:
+    let rtpx = ttpp; //timestamp of move update
+    let rtpo = ttpp; 
     
     
     //removed old temp util functions
@@ -20,13 +20,13 @@ module.exports = function(io) {
     
     function startTimer(){
         INTERVAL_ID = setInterval(() => {
-            player === 1 ? --rtp1 : --rtp2;
+            player === 1 ? --rtpx : --rtpo;
             io.emit('tick', {
-                turnOf: player,
-                rtp1,
-                rtp2
+                turnOf: player===1? 'x':'o',
+                rtpx,
+                rtpo
             });
-            if(rtp1 === 0 || rtp2 === 0) {
+            if(rtpx === 0 || rtpo === 0) {
                 //board.moves = 10;
                 //get win status and send
                 io.emit('status',{
@@ -34,12 +34,12 @@ module.exports = function(io) {
                     game_status: 'finished',
                     board: board.board,
                     winner: player === 1 ? 'O' : 'X',
-                    rtp1,rtp2
+                    rtpx,rtpo
                 });
                 stopTimer();
                 console.log('Game Finished');
             }
-            // console.log('tick',rtp1,rtp2);
+            // console.log('tick',rtpx,rtpo);
         }, 1000);
     }
     
@@ -53,26 +53,29 @@ module.exports = function(io) {
     io.on('connection',(socket)=>{
         
         if(!xFilled) {
-            connections.set(socket.id,{role: 1});
+            connections.set(socket.id,{role: 'x'});
             xFilled = true;
         }
         else if(!oFilled) {
-            connections.set(socket.id,{role: 2});
+            connections.set(socket.id,{role: 'o'});
             oFilled = true;
         }   
-        else connections.set(socket.id,{role: 3}); //spectator
+        else connections.set(socket.id,{role: 's'}); //spectator
 
         console.log(`New Connection: ${socket.id}, role: ${connections.get(socket.id).role}`);
         console.log('connections:',connections);
-        socket.emit('initialData', {
+
+        //change initial data to setup
+        socket.emit('setup', {
             role: connections.get(socket.id).role,
-            rtp1,rtp2
+            rtpx,rtpo, turnOf: player === 1 ? 'x' : 'o',
+            board: board.board
         });
         
         socket.on('disconnect',()=> {
             const conRole = connections.get(socket.id).role;
-            if(conRole===1) xFilled = false;
-            else if(conRole===2) oFilled = false;
+            if(conRole==='x') xFilled = false;
+            else if(conRole==='o') oFilled = false;
 
             console.log(`Disconnected: ${socket.id}, role: ${connections.get(socket.id).role}`);
             connections.delete(socket.id);
@@ -80,17 +83,16 @@ module.exports = function(io) {
         });
 
         socket.on('move', (r,c,p)=>{
-            // console.log(r,c,p,socket.id);
-
+            p = p==='x'? 1 : p==='o'? 2 : 3;
             if(player === p) {
-                
+                console.log(r,c,p,socket.id);
                 const updateStatus = board.update(r,c,p);
                 const data = board.serialize(updateStatus,p);
                 data.turnOf = player;
                 if(data.game_status === 'finished') {
                     stopTimer();
-                    data.rtp1 = rtp1;
-                    data.rtp2 = rtp2;
+                    data.rtpx = rtpx;
+                    data.rtpo = rtpo;
                     console.log('Game Finished');
                 }
                 if(updateStatus){
@@ -109,11 +111,11 @@ module.exports = function(io) {
             player = 1;
             stopTimer();
             startTimer();
-            rtp1 = ttpp;
-            rtp2 = ttpp;
+            rtpx = ttpp;
+            rtpo = ttpp;
             const payload = {
                 turnOf: player,
-                rtp1, rtp2
+                rtpx, rtpo
             }
             io.emit('newboard',payload);
         });
@@ -121,9 +123,9 @@ module.exports = function(io) {
         socket.on('getgame',()=>{
             const data = board.serialize(true,player);
             data.turnOf = player;
-            data.rtp1 = rtp1;
-            data.rtp2 = rtp2;
-            if(rtp1 == 0 || rtp2 == 0) data.game_status = 'finished';
+            data.rtpx = rtpx;
+            data.rtpo = rtpo;
+            if(rtpx == 0 || rtpo == 0) data.game_status = 'finished';
 
             socket.emit('spectator-setup', data);
         });
