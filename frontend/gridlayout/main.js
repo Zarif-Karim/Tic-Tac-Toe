@@ -15,7 +15,7 @@ if(socket) {
     socket.on('setup', (data)=>{
         console.log('setup:',data);
         setTime(data.rtpx,data.rtpo);
-        setRole(data.role);
+        if(data.role) setRole(data.role);
         setTurn(data.turnOf);
         setScreenBoardClickEvents(board);
         updateBoard(data.board)
@@ -64,8 +64,9 @@ function setScreenBoardClickEvents(displayBoard, remove = false){
         for(let j = 0; j < 3; ++j){
             displayBoard[i*3+j].onclick = 
             remove ? null : 
-            ()=> {
-                if(turnOf === player) 
+            (event)=> {
+                // if(turnOf === player)
+                if(!displayBoard[i*3+j].classList.contains('X') || !displayBoard[i*3+j].classList.contains('O')) 
                     socket.emit('move', i,j,player);
             }
         }

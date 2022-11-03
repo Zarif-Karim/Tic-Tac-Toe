@@ -9,7 +9,8 @@ module.exports = function(io) {
     
     let xFilled = false;
     let oFilled = false;
-    let player = 2;
+    let startPlayer = 'x';
+    let player = 1;
     let ttpp = 500; //total time per player in seconds:
     let rtpx = ttpp; //timestamp of move update
     let rtpo = ttpp; 
@@ -50,6 +51,18 @@ module.exports = function(io) {
         }
     }
 
+
+    function setUp(socket,sendRole=true) {
+        //change initial data to setup
+        const payload = {
+            rtpx,rtpo, turnOf: startPlayer,
+            board: board.board
+        };
+        if(sendRole) payload.role = connections.get(socket.id).role;
+        console.log('setup', payload);
+        socket.emit('setup', payload);
+    }
+
     io.on('connection',(socket)=>{
         
         if(!xFilled) {
@@ -64,13 +77,7 @@ module.exports = function(io) {
 
         console.log(`New Connection: ${socket.id}, role: ${connections.get(socket.id).role}`);
         console.log('connections:',connections);
-
-        //change initial data to setup
-        socket.emit('setup', {
-            role: connections.get(socket.id).role,
-            rtpx,rtpo, turnOf: player === 1 ? 'x' : 'o',
-            board: board.board
-        });
+        setUp(socket);
         
         socket.on('disconnect',()=> {
             const conRole = connections.get(socket.id).role;
@@ -106,18 +113,14 @@ module.exports = function(io) {
 
         socket.on('newgame',()=>{
             console.log('New board requested');
-            
+            startPlayer = startPlayer === 'x' ? 'o' : 'x';
+            player = startPlayer === 'x' ? 1 : 2;
             board = new Board();
-            player = 1;
             stopTimer();
             startTimer();
             rtpx = ttpp;
             rtpo = ttpp;
-            const payload = {
-                turnOf: player,
-                rtpx, rtpo
-            }
-            io.emit('newboard',payload);
+            setUp(io,false);
         });
 
         socket.on('getgame',()=>{
@@ -126,7 +129,6 @@ module.exports = function(io) {
             data.rtpx = rtpx;
             data.rtpo = rtpo;
             if(rtpx == 0 || rtpo == 0) data.game_status = 'finished';
-
             socket.emit('spectator-setup', data);
         });
 
@@ -136,3 +138,4 @@ module.exports = function(io) {
         });
     });
 }
+
