@@ -119,21 +119,8 @@ function finishGame(winData){
 }
 
 function updatePlayerPanelDisplay() {
-    if(player === 1)
-    {
-        whopx.innerText = turnOf === 1 ? "Your Turn" : "Waiting";
-        whopo.innerText = turnOf === 1 ? "Waiting" : "Opponent Turn";
-    }
-    else if(player === 2) 
-    {
-        whopx.innerText = turnOf === 2 ?  "Waiting" : "Opponent Turn";
-        whopo.innerText = turnOf === 2 ?  "Your Turn" : "Waiting";
-    } 
-    else
-    {
-        whopx.innerText = turnOf === 1 ?  "Playing" : "Waiting";
-        whopo.innerText = turnOf === 1 ?  "Waiting" : "Playing";
-    }
+    whopx.innerText = turnOf === 1 ?  "Playing" : "Waiting";
+    whopo.innerText = turnOf === 1 ?  "Waiting" : "Playing";
 
     // find other means of indicating
     // turnpx.style.display = turnOf === 1 ? 'block' : 'none';
