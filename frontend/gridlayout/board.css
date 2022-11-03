@@ -34,7 +34,7 @@
     align-items: center;
 }
 
-.cell:hover {
+.cell:not(.X):not(.O):hover {
     transform: scale(1.02);
 }
 
@@ -83,4 +83,8 @@
 
     border-radius: 50%;
 
+}
+
+.cell.X, .cell.O {
+    cursor: not-allowed;
 }
