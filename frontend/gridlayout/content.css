@@ -1,5 +1,6 @@
 :root {
     --max-width: 500px;
+    --player-status-background: antiquewhite;
 }
 
 .content {
@@ -35,7 +36,7 @@
 
 .player-stats {
     display: inline-block;
-    background-color: antiquewhite;
+    background-color: var(--player-status-background);
     width: min(200px,40vw);
     border-radius: 10px;
     box-shadow: 5px 5px 30px;
@@ -43,6 +44,7 @@
     padding: 5px;
     margin: 10px auto;
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    position: relative;
 }
 
 .player-x {
@@ -55,6 +57,36 @@
         justify-self: start;
 }
 
+.player-stats.me:after {
+    background-color: rgb(173, 43, 156);
+    content:'me';
+    color: white;
+    border: 1px solid rgb(240, 170, 230);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px black;
+    font-size: 0.8em;
+    padding: 2px 5px;
+
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
+@keyframes blinking {
+    0% {
+        background-color: var(--player-status-background);
+    }
+    50% {
+        background-color: green;
+    }
+    100% {
+        background-color: var(--player-status-background);
+    }
+}
+
+.player-stats.turn {
+    animation: blinking 1s infinite;
+}
 
 .chat-window {
     grid-area: chat-window;
@@ -89,6 +121,8 @@
     background-color:rgb(187, 197, 207);
     box-shadow: 5px 5px 30px;
 }
+
+
 
 
 .chat-inputs {
