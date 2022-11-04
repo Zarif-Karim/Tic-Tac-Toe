@@ -1,6 +1,7 @@
 //removed old temp util functions
 let INTERVAL_ID = null;
 
+
 function startTimer(){
     INTERVAL_ID = setInterval(() => {
         player === 1 ? --rtp1 : --rtp2;
