@@ -20,7 +20,7 @@
         <div class="content">
             <div class="game-title">TicTacToe</div>
             <!-- pso: player status x -->
-            <div class="player-stats player-x turn" id="psx">
+            <div class="player-stats player-x" id="psx">
                 Player X <br>
                 <span id="time-x">10</span> s
             </div>
@@ -30,6 +30,10 @@
                 <span id="time-o">10</span> s
             </div>
             <div class="board-container">
+                <div id="overlay">
+                    <div id="overlay-message">Who won?</div>
+                    <button id="play-again-btn">Play Again</button>
+                </div>
                 <div id="c1" class="cell"></div>
                 <div id="c2" class="cell"></div>
                 <div id="c3" class="cell"></div>

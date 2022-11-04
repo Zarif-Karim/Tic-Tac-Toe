@@ -88,9 +88,14 @@ class Board
         if(this.moves >= 9)
             data.winner = 'draw';
 
-        if(this.#checkWin(player))
-            data.winner = player == 1 ? 'X' : 'O';
-        
+        if(player){
+            if(this.#checkWin(player))
+                data.winner = player == 1 ? 'X' : 'O';
+        }
+        else {
+            if(this.#checkWin(1)) data.winner = 'X';
+            else if(this.#checkWin(2)) data.winner = 'O';
+        }
         data.game_status = ('winner' in data) ? 'finished' : 'ongoing';
 
         return data;

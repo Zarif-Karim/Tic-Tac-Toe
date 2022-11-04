@@ -10,8 +10,8 @@ module.exports = function(io) {
     let xFilled = false;
     let oFilled = false;
     let startPlayer = 'x';
-    let player = 1;
-    let ttpp = 500; //total time per player in seconds:
+    let player = -1;
+    let ttpp = 10; //total time per player in seconds:
     let rtpx = ttpp; //timestamp of move update
     let rtpo = ttpp; 
     
@@ -37,6 +37,7 @@ module.exports = function(io) {
                     winner: player === 1 ? 'O' : 'X',
                     rtpx,rtpo
                 });
+                player = -1;
                 stopTimer();
                 console.log('Game Finished');
             }
@@ -53,13 +54,23 @@ module.exports = function(io) {
 
 
     function setUp(socket,sendRole=true) {
+        const data = board.gameStatus();
+        if(rtpx === 0 || rtpo === 0){
+            data.game_status = 'finished';
+            data.winner = player === 1 ? 'O' : 'X';
+        }
         //change initial data to setup
         const payload = {
-            rtpx,rtpo, turnOf: startPlayer,
-            board: board.board
+            rtpx,rtpo, turnOf: player===1 ? 'x' : player === 2 ? 'o' : '',
+            board: board.board,
+            game_status: data.game_status
         };
+        if(data.game_status==='finished') {
+            payload.winner = data.winner;
+            payload.turnOf = '';
+        }
         if(sendRole) payload.role = connections.get(socket.id).role;
-        console.log('setup', payload);
+        // console.log('setup', payload);
         socket.emit('setup', payload);
     }
 
@@ -92,7 +103,7 @@ module.exports = function(io) {
         socket.on('move', (r,c,p)=>{
             p = p==='x'? 1 : p==='o'? 2 : 3;
             if(player === p) {
-                console.log(r,c,p,socket.id);
+                // console.log(r,c,p,socket.id);
                 const updateStatus = board.update(r,c,p);
                 const data = board.serialize(updateStatus,p);
                 data.turnOf = player;

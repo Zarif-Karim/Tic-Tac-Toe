@@ -5,6 +5,8 @@ const timeX = get('time-x');
 const timeO = get('time-o');
 const psx = get('psx');
 const pso = get('pso');
+const overlay = get('overlay');
+const overlayMessage = get('overlay-message');
 const board = document.getElementsByClassName('cell');
 
 let turnOf;
@@ -17,8 +19,10 @@ if(socket) {
         setTime(data.rtpx,data.rtpo);
         if(data.role) setRole(data.role);
         setTurn(data.turnOf);
+        setOverlay(data.game_status,data.winner);
         setScreenBoardClickEvents(board);
-        updateBoard(data.board)
+        updateBoard(data.board);
+        if(player==='s') get('play-again-btn').style.display = 'none';
     });
 
     socket.on('tick',({turnOf,rtpx,rtpo})=>{
@@ -38,8 +42,24 @@ if(socket) {
         {
             //finishGame(data);
             setTurn('');
+            setOverlay(data.game_status, data.winner);
         }
     });
+}
+
+function setOverlay(status, winner) {
+    overlay.style.display = 'none';
+
+    if(status === 'finished') {
+        if(winner === 'draw') overlayMessage.innerText = 'DRAW';
+        else overlayMessage.innerText = winner + ' won!';
+        overlay.style.display = 'flex';
+    }
+
+    if(status == 'ongoing' && turnOf === '') {
+        overlay.style.display = 'flex';
+        overlayMessage.innerText = 'Start Game';
+    }
 }
 
 function updateBoard(_board){
@@ -103,4 +123,8 @@ function setRole(role){
         psx.classList.remove('me');
         pso.classList.add('me');
     }
+}
+
+get('play-again-btn').onclick = ()=>{
+    socket.emit('newgame');    
 }
