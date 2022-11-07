@@ -108,10 +108,44 @@
 
     background-color: rgb(218, 213, 213);
     box-shadow: 5px 5px 30px;
+
+    /* display: flex;
+    flex-flow: column nowrap; */
+
 }
 
-.chat-texts li {
-    padding-left: 15px;
+#chat-messages {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    
+    height: 150px;
+    overflow-y: scroll;
+    overflow-x: wrap;
+    /* overflow-y: scroll; */
+}
+.chat-message {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    padding: 1px;
+    margin-left: 5px;
+}
+
+.username {
+    font-weight: bold;
+}
+.username::after {
+    content: ':';
+    margin-right: 3px;
+}
+.message {
+    font-size: 0.6em;
+    align-self: center;
+    text-align: left;
+}
+.username {
+    font-size: 0.7em;
 }
 
 .online-users {
@@ -120,6 +154,8 @@
 
     background-color:rgb(187, 197, 207);
     box-shadow: 5px 5px 30px;
+    font-size: 0.7em;
+    min-width: 20vw;
 }
 
 
@@ -143,38 +179,22 @@
     border-radius: inherit;
 }
 
-ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-ul li {
-    display: block;
-    margin: 0px;
-    
-    text-align: left;
-    padding-left: 5px;
-    font-size: 0.7em;
-}
-
-.online-users-list li{
-    text-align: center;
-}
-
 @media (min-width: 650px) {
     .chat-window {
         width: var(--max-width);
         justify-self: center;
     }
-    
-    ul li {
-        padding: 2px;
-        font-size: 0.9em;
-        padding-left: 5px;
-    }
 
     .player-stats {
         width: 200px;
+    }
+
+    .message, .username {
+        font-size: 0.8em;
+    }
+
+    .online-users {
+        min-width: 100px;
     }
 
 }

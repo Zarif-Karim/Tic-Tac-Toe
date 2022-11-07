@@ -15,6 +15,7 @@ module.exports = function(io) {
     let rtpx = ttpp; //timestamp of move update
     let rtpo = ttpp; 
     
+    let userCount = 0;
     
     //removed old temp util functions
     let INTERVAL_ID = null;
@@ -71,20 +72,21 @@ module.exports = function(io) {
         }
         if(sendRole) payload.role = connections.get(socket.id).role;
         // console.log('setup', payload);
+        payload.username = connections.get(socket.id).userName;
         socket.emit('setup', payload);
     }
 
     io.on('connection',(socket)=>{
         
         if(!xFilled) {
-            connections.set(socket.id,{role: 'x'});
+            connections.set(socket.id,{role: 'x', userName: `user${++userCount}`});
             xFilled = true;
         }
         else if(!oFilled) {
-            connections.set(socket.id,{role: 'o'});
+            connections.set(socket.id,{role: 'o', userName: `user${++userCount}`});
             oFilled = true;
         }   
-        else connections.set(socket.id,{role: 's'}); //spectator
+        else connections.set(socket.id,{role: 's', userName: `user${++userCount}`}); //spectator
 
         console.log(`New Connection: ${socket.id}, role: ${connections.get(socket.id).role}`);
         console.log('connections:',connections);
@@ -146,6 +148,13 @@ module.exports = function(io) {
         socket.on('message', (msg)=>{
             console.log('Emitting',msg);
             io.emit('showMsg', msg);
+        });
+
+        socket.on('chat-message', ({message}) => {
+            socket.broadcast.emit('chat-message', {
+                username: connections.get(socket.id).userName,
+                message
+            });
         });
     });
 }
