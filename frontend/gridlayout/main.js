@@ -23,6 +23,7 @@ if(socket) {
         setScreenBoardClickEvents(board);
         updateBoard(data.board);
         if(player==='s') get('play-again-btn').style.display = 'none';
+        username = data.username;
     });
 
     socket.on('tick',({turnOf,rtpx,rtpo})=>{
@@ -44,6 +45,10 @@ if(socket) {
             setTurn('');
             setOverlay(data.game_status, data.winner);
         }
+    });
+
+    socket.on('chat-message', ({username,message})=>{
+        displayMessage(username,message);
     });
 }
 
