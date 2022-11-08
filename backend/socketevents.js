@@ -52,7 +52,7 @@ module.exports = function(io) {
     }
 
 
-    function setUp(socket,sendRole=true) {
+    function setUp(socket,sendRole=true, sendUsers=true) {
         const data = board.gameStatus();
         if(rtpx === 0 || rtpo === 0){
             data.game_status = 'finished';
@@ -72,9 +72,11 @@ module.exports = function(io) {
         // console.log('setup', payload);
         payload.onlineUsers = [];
         //get all users except self
-        for(let [id,data] of connections.entries()){
-            if(data.userName)
-                payload.onlineUsers.push({id, name: data.userName});
+        if(sendUsers) {
+            for(let [id,data] of connections.entries()){
+                if(data.userName)
+                    payload.onlineUsers.push({id, name: data.userName});
+            }
         }
         socket.emit('setup', payload);
     }
@@ -139,7 +141,7 @@ module.exports = function(io) {
             startTimer();
             rtpx = ttpp;
             rtpo = ttpp;
-            setUp(io,false);
+            setUp(io,false,false);
         });
 
         socket.on('getgame',()=>{
