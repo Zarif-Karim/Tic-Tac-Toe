@@ -1,4 +1,3 @@
-let username = 'zar123';
 
 const form = get('chat-form');
 const msgInput = get('chat-message-input');
