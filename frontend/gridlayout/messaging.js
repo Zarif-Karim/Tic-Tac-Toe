@@ -1,9 +1,10 @@
 
-const form = get('chat-form');
+const chatForm = get('chat-form');
 const msgInput = get('chat-message-input');
 const msgWindow = get('chat-messages');
 
-form.onsubmit = (event) => {
+
+chatForm.onsubmit = (event) => {
     event.preventDefault();
     
     // console.log(event);
@@ -27,13 +28,10 @@ function displayMessage(from, message){
 }
 
 function createMessage(username,message) {
-    const cm = document.createElement('div')
-    cm.className = 'chat-message';
-    const un = document.createElement('div')
-    un.className = 'username';
-    const msg = document.createElement('div')
-    msg.className = 'message';
-
+    const cm = createElement('div',['chat-message']);
+    const un = createElement('div',['username']);
+    const msg = createElement('div',['message']);
+    
     un.innerText = username;
     msg.innerText = message;
 
@@ -42,3 +40,5 @@ function createMessage(username,message) {
 
     return cm;
 }
+
+

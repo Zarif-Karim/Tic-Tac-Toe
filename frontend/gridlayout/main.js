@@ -8,6 +8,7 @@ const pso = get('pso');
 const overlay = get('overlay');
 const overlayMessage = get('overlay-message');
 const board = document.getElementsByClassName('cell');
+const onlineUserList = get('online-users-container');
 
 let turnOf;
 let player;
@@ -136,4 +137,19 @@ get('username-submit').onclick = (event)=>{
     username = get('username-input').value;
     get('screen-block').style.display = 'none';
     socket.emit('set-username', username);
+
+    if(onlineUserList.children.length > 1){
+        insertOnlineUser(onlineUserList.children[1].innerText);
+        onlineUserList.children[1].innerText = username;        
+    } else {
+        insertOnlineUser(username);
+    }
+    onlineUserList.children[1].classList.add('me');
+}
+
+function insertOnlineUser(name){
+    const user = createElement('div',['online-user']);
+    user.innerText = name;
+    
+    onlineUserList.appendChild(user);
 }
