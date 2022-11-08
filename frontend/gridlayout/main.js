@@ -8,6 +8,7 @@ const pso = get('pso');
 const overlay = get('overlay');
 const overlayMessage = get('overlay-message');
 const board = document.getElementsByClassName('cell');
+const onlineUserList = get('online-users-container');
 
 let turnOf;
 let player;
@@ -24,6 +25,10 @@ if(socket) {
         setScreenBoardClickEvents(board);
         updateBoard(data.board);
         if(player==='s') get('play-again-btn').style.display = 'none';
+        data.onlineUsers.forEach(user => {
+            if(user.id !== socket.id)
+                insertOnlineUser(user.name,user.id);
+        });
     });
 
     socket.on('tick',({turnOf,rtpx,rtpo})=>{
@@ -49,6 +54,16 @@ if(socket) {
 
     socket.on('chat-message', ({username,message})=>{
         displayMessage(username,message);
+    });
+
+    socket.on('user-connected', (name,id)=>{
+        insertOnlineUser(name,id);
+    })
+
+    socket.on('user-disconnected', (name,id)=>{
+        
+        const user = get(id);
+        if(user) user.remove();
     });
 }
 
@@ -136,4 +151,19 @@ get('username-submit').onclick = (event)=>{
     username = get('username-input').value;
     get('screen-block').style.display = 'none';
     socket.emit('set-username', username);
+
+    if(onlineUserList.children.length > 1){
+        insertOnlineUser(onlineUserList.children[1].innerText);
+        onlineUserList.children[1].innerText = username;        
+    } else {
+        insertOnlineUser(username);
+    }
+    onlineUserList.children[1].classList.add('me');
+}
+
+function insertOnlineUser(name, id){
+    const user = createElement('div',['online-user'], id);
+    user.innerText = name;
+    
+    onlineUserList.appendChild(user);
 }

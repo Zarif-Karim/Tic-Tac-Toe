@@ -156,9 +156,28 @@
     box-shadow: 5px 5px 30px;
     font-size: 0.7em;
     min-width: 20vw;
+    max-height: 190px;
+    overflow-y: scroll;
+    overflow-x: wrap;
 }
 
+.online-users-title, .online-user.me {
+    font-weight: bold;
+    padding:5px;
+    border-bottom: 1px solid black;
+    position: relative;
+}
 
+.online-user.me::before {
+    content: "Me: ";
+    position: absolute;
+    left: 0px;
+    padding-left: 4px;
+}
+
+.online-user {
+    padding: 3px;
+}
 
 
 .chat-inputs {
@@ -210,6 +229,7 @@
 #username-prompt-container button {
     margin: 10px 0px;
 }
+
 
 
 

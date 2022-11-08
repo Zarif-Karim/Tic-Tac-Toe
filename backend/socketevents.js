@@ -70,6 +70,12 @@ module.exports = function(io) {
         }
         if(sendRole) payload.role = connections.get(socket.id).role;
         // console.log('setup', payload);
+        payload.onlineUsers = [];
+        //get all users except self
+        for(let [id,data] of connections.entries()){
+            if(data.userName)
+                payload.onlineUsers.push({id, name: data.userName});
+        }
         socket.emit('setup', payload);
     }
 
@@ -94,9 +100,12 @@ module.exports = function(io) {
             if(conRole==='x') xFilled = false;
             else if(conRole==='o') oFilled = false;
 
-            console.log(`Disconnected: ${socket.id}, role: ${connections.get(socket.id).role}`);
+            socket.broadcast.emit('user-disconnected',connections.get(socket.id).userName,socket.id);
+            console.log(`Disconnected: ${socket.id}, ${connections.get(socket.id)}`);
             connections.delete(socket.id);
             console.log('connections:',connections);
+
+
         });
 
         socket.on('move', (r,c,p)=>{
@@ -157,6 +166,8 @@ module.exports = function(io) {
         socket.on('set-username', name => {
             connections.get(socket.id).userName = name;
             console.log(connections.get(socket.id));
+
+            socket.broadcast.emit('user-connected', name, socket.id);
         })
     });
 }
