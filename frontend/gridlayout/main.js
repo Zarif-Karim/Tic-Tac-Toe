@@ -25,6 +25,10 @@ if(socket) {
         setScreenBoardClickEvents(board);
         updateBoard(data.board);
         if(player==='s') get('play-again-btn').style.display = 'none';
+        data.onlineUsers.forEach(user => {
+            if(user.id !== socket.id)
+                insertOnlineUser(user.name,user.id);
+        });
     });
 
     socket.on('tick',({turnOf,rtpx,rtpo})=>{
@@ -50,6 +54,16 @@ if(socket) {
 
     socket.on('chat-message', ({username,message})=>{
         displayMessage(username,message);
+    });
+
+    socket.on('user-connected', (name,id)=>{
+        insertOnlineUser(name,id);
+    })
+
+    socket.on('user-disconnected', (name,id)=>{
+        
+        const user = get(id);
+        if(user) user.remove();
     });
 }
 
@@ -147,8 +161,8 @@ get('username-submit').onclick = (event)=>{
     onlineUserList.children[1].classList.add('me');
 }
 
-function insertOnlineUser(name){
-    const user = createElement('div',['online-user']);
+function insertOnlineUser(name, id){
+    const user = createElement('div',['online-user'], id);
     user.innerText = name;
     
     onlineUserList.appendChild(user);
