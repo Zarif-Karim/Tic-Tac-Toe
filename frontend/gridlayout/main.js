@@ -11,6 +11,7 @@ const board = document.getElementsByClassName('cell');
 
 let turnOf;
 let player;
+let username;
 
 if(socket) {
     // socket.emit('newgame');
@@ -23,7 +24,6 @@ if(socket) {
         setScreenBoardClickEvents(board);
         updateBoard(data.board);
         if(player==='s') get('play-again-btn').style.display = 'none';
-        username = data.username;
     });
 
     socket.on('tick',({turnOf,rtpx,rtpo})=>{
@@ -128,4 +128,12 @@ function setRole(role){
 
 get('play-again-btn').onclick = ()=>{
     socket.emit('newgame');    
+}
+
+
+get('username-submit').onclick = (event)=>{
+    event.preventDefault();
+    username = get('username-input').value;
+    get('screen-block').style.display = 'none';
+    socket.emit('set-username', username);
 }
