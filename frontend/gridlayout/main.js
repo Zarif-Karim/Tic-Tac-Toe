@@ -9,6 +9,8 @@ const overlay = get('overlay');
 const overlayMessage = get('overlay-message');
 const board = document.getElementsByClassName('cell');
 const onlineUserList = get('online-users-container');
+const xName = get('x-name');
+const oName = get('o-name');
 
 let turnOf;
 let player;
@@ -29,6 +31,9 @@ if(socket) {
             if(user.id !== socket.id)
                 insertOnlineUser(user.name,user.id);
         });
+
+        xName.innerText = data.xName;
+        oName.innerText = data.oName;
     });
 
     socket.on('tick',({turnOf,rtpx,rtpo})=>{
@@ -56,16 +61,22 @@ if(socket) {
         displayMessage(username,message);
     });
 
-    socket.on('user-connected', (name,id)=>{
-        insertOnlineUser(name,id);
+    socket.on('user-connected', (id, {role,userName})=>{
+        insertOnlineUser(userName,id);
     })
 
-    socket.on('user-disconnected', (name,id)=>{
-        
+    socket.on('user-disconnected', (name,id)=>{   
         const user = get(id);
         if(user) user.remove();
     });
+
+    socket.on('set-player', (role, userName)=>{
+        if(role === 'x') xName.innerText = userName;
+        else if(role === 'o') oName.innerText = userName;
+    });
 }
+
+
 
 function setOverlay(status, winner) {
     overlay.style.display = 'none';
@@ -81,6 +92,7 @@ function setOverlay(status, winner) {
         overlayMessage.innerText = 'Start Game';
     }
 }
+
 
 function updateBoard(_board){
     for(let i = 0; i < 3; ++i){
@@ -152,13 +164,15 @@ get('username-submit').onclick = (event)=>{
     get('screen-block').style.display = 'none';
     socket.emit('set-username', username);
 
-    if(onlineUserList.children.length > 1){
-        insertOnlineUser(onlineUserList.children[1].innerText);
-        onlineUserList.children[1].innerText = username;        
-    } else {
-        insertOnlineUser(username);
-    }
-    onlineUserList.children[1].classList.add('me');
+    let c1 = onlineUserList.children[1];
+    if(c1){
+        insertOnlineUser(c1.innerText,c1.id);
+        c1.innerText = username;
+        c1.id = socket.id;        
+    } else insertOnlineUser(username,socket.id);
+
+    c1 = onlineUserList.children[1];
+    if(!c1.classList.contains('me')) c1.classList.add('me');
 }
 
 function insertOnlineUser(name, id){

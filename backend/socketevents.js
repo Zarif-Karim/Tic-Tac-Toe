@@ -7,8 +7,8 @@ module.exports = function(io) {
     
     const connections = new Map();
     
-    let xFilled = false;
-    let oFilled = false;
+    let xID = null;
+    let oID = null;
     let startPlayer = 'x';
     let player = -1;
     let ttpp = 10; //total time per player in seconds:
@@ -78,18 +78,20 @@ module.exports = function(io) {
                     payload.onlineUsers.push({id, name: data.userName});
             }
         }
+        if(xID) payload.xName = connections.get(xID).userName || '';
+        if(oID) payload.oName = connections.get(oID).userName || '';
         socket.emit('setup', payload);
     }
 
     io.on('connection',(socket)=>{
         
-        if(!xFilled) {
+        if(!xID) {
             connections.set(socket.id,{role: 'x'});
-            xFilled = true;
+            xID = socket.id;
         }
-        else if(!oFilled) {
+        else if(!oID) {
             connections.set(socket.id,{role: 'o'});
-            oFilled = true;
+            oID = socket.id;
         }   
         else connections.set(socket.id,{role: 's'}); //spectator
 
@@ -99,8 +101,9 @@ module.exports = function(io) {
         
         socket.on('disconnect',()=> {
             const conRole = connections.get(socket.id).role;
-            if(conRole==='x') xFilled = false;
-            else if(conRole==='o') oFilled = false;
+            if(conRole==='x') xID = null;
+            else if(conRole==='o') oID = null;
+            if(conRole !== 's') io.emit('set-player', conRole, '');
 
             socket.broadcast.emit('user-disconnected',connections.get(socket.id).userName,socket.id);
             console.log(`Disconnected: ${socket.id}, ${connections.get(socket.id)}`);
@@ -168,8 +171,10 @@ module.exports = function(io) {
         socket.on('set-username', name => {
             connections.get(socket.id).userName = name;
             console.log(connections.get(socket.id));
+            const {role} = connections.get(socket.id);
+            if(role !== 's') io.emit('set-player',role,name);
 
-            socket.broadcast.emit('user-connected', name, socket.id);
+            socket.broadcast.emit('user-connected', socket.id, connections.get(socket.id));
         })
     });
 }
